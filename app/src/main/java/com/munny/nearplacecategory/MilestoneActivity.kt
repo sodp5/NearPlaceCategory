@@ -1,0 +1,11 @@
+package com.munny.nearplacecategory
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+
+class MilestoneActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_milestone)
+    }
+}
