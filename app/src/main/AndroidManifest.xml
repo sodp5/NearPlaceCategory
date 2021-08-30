@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MapActivity" />
+        <activity android:name=".ui.nearsearch.NearSearchActivity" />
     </application>
 
 </manifest>

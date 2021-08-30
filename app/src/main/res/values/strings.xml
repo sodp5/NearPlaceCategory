@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">NearPlaceCategory</string>
+    
+    <string name="near_search_suggest">주변의 음식점들을 확인 해보세요!</string>
+    <string name="near_search_search">확인하기</string>
 </resources>
