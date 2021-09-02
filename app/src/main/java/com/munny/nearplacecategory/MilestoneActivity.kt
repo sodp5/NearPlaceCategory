@@ -5,12 +5,14 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.munny.nearplacecategory.extensions.startActivity
+import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListActivity
 import com.munny.nearplacecategory.ui.nearsearch.NearSearchActivity
 
 class MilestoneActivity : AppCompatActivity() {
     private val list = arrayListOf(
         "Start MapActivity" to { startActivity<MapActivity>() },
-        "Start NearSearchActivity" to { startActivity<NearSearchActivity>() }
+        "Start NearSearchActivity" to { startActivity<NearSearchActivity>() },
+        "Start NearCategoryListActivity" to { startActivity<NearCategoryListActivity>() },
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
