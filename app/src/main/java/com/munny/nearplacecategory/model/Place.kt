@@ -1,5 +1,9 @@
 package com.munny.nearplacecategory.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Place(
     val id: Long,
     val placeName: String,
@@ -8,4 +12,4 @@ data class Place(
     val distance: String,
     val longitude: Double,
     val latitude: Double
-)
+): Parcelable

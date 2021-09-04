@@ -28,6 +28,7 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".ui.nearsearch.NearSearchActivity" />
         <activity android:name=".ui.nearcategorylist.NearCategoryListActivity" />
+        <activity android:name=".ui.storelist.StoreListActivity" />
     </application>
 
 

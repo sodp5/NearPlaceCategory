@@ -10,6 +10,8 @@ import com.gun0912.tedpermission.coroutine.TedPermission
 import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory._base.BaseActivity
 import com.munny.nearplacecategory.databinding.ActivityNearCategoryListBinding
+import com.munny.nearplacecategory.extensions.startActivity
+import com.munny.nearplacecategory.ui.storelist.StoreListActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -26,7 +28,11 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
         super.onCreate(savedInstanceState)
         binding.vm = vm
 
-        binding.rvNearCategoryList.adapter = NearCategoryListAdapter()
+        binding.rvNearCategoryList.adapter = NearCategoryListAdapter { categoryItem ->
+            startActivity<StoreListActivity>(Bundle().apply {
+                putParcelable(StoreListActivity.EXTRA_CATEGORY_ITEM, categoryItem)
+            })
+        }
     }
 
     override fun onStart() {

@@ -32,12 +32,12 @@ class NearCategoryListRepositoryImpl @Inject constructor(
                 val splits = document.category_name.split(">").map { it.trim() }
 
                 val category = Category(splits[0])
-                var currCategory = category
+                var currCategory: Category? = category
 
                 splits.filterIndexed { index, _ ->  index != 0}
                     .forEach {
-                        currCategory.category = Category(it)
-                        currCategory = currCategory.category ?: return@forEach
+                        currCategory?.category = Category(it)
+                        currCategory = currCategory?.category
                     }
 
                 Place(
