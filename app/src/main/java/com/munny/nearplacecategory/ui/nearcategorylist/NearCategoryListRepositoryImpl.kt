@@ -28,28 +28,8 @@ class NearCategoryListRepositoryImpl @Inject constructor(
                 size
             )
 
-            response.documents.map { document ->
-                val splits = document.category_name.split(">").map { it.trim() }
-
-                val category = Category(splits[0])
-                var currCategory: Category? = category
-
-                splits.filterIndexed { index, _ ->  index != 0}
-                    .forEach {
-                        currCategory?.category = Category(it)
-                        currCategory = currCategory?.category
-                    }
-
-                Place(
-                    id = document.id,
-                    name = document.place_name,
-                    category = category,
-                    phone = document.phone,
-                    distance = document.distance,
-                    longitude = longitude,
-                    latitude = latitude
-                )
-            }.let { categoryList.addAll(it) }
+            response.documents.map(PlaceMapper()::documentToPlace)
+                .let { categoryList.addAll(it) }
 
             isEnd = response.meta.is_end
         }

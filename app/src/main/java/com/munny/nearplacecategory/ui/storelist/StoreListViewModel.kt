@@ -8,6 +8,7 @@ import com.munny.nearplacecategory.model.Place
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 class StoreListViewModel @AssistedInject constructor(
     @Assisted title: String,
@@ -20,6 +21,11 @@ class StoreListViewModel @AssistedInject constructor(
     private val _placeList = MutableLiveData(placeList)
     val placeList: LiveData<List<Place>>
         get() = _placeList
+
+    @Inject
+    fun sortList() {
+        _placeList.value = placeList.value?.sortedBy { it.distance }
+    }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

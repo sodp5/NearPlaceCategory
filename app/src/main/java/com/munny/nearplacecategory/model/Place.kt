@@ -9,7 +9,7 @@ data class Place(
     val name: String,
     val category: Category?,
     val phone: String,
-    val distance: String,
+    val distance: Int,
     val longitude: Double,
     val latitude: Double
 ): Parcelable
