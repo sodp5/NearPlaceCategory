@@ -3,14 +3,18 @@ package com.munny.nearplacecategory.ui.nearcategorylist
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import com.munny.nearplacecategory._base.BaseListAdapter
+import com.munny.nearplacecategory._base.BaseViewHolder
 import com.munny.nearplacecategory.databinding.ItemNearCategoryListBinding
 import com.munny.nearplacecategory.model.CategoryItem
 
 class NearCategoryListAdapter(
     private val onCategoryClickListener: (CategoryItem) -> Unit
-) : ListAdapter<CategoryItem, NearCategoryListViewHolder>(DIFF_UTIL) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NearCategoryListViewHolder {
+) : BaseListAdapter<CategoryItem>(DIFF_UTIL) {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): BaseViewHolder<CategoryItem> {
         return NearCategoryListViewHolder(
             ItemNearCategoryListBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -23,10 +27,6 @@ class NearCategoryListAdapter(
                 onCategoryClickListener.invoke(getItem(position))
             }
         }
-    }
-
-    override fun onBindViewHolder(holder: NearCategoryListViewHolder, position: Int) {
-        holder.bind(getItem(position))
     }
 
     companion object {

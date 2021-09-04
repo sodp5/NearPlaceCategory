@@ -16,7 +16,7 @@ class NearCategoryListRepositoryImpl @Inject constructor(
         val categoryList = mutableListOf<Place>()
         var isEnd = false
         var page = 1
-        var size = 15
+        val size = 15
 
         while (!isEnd) {
             val response = nearCategoryListDataSource.getPlaceByCategory(
@@ -42,7 +42,7 @@ class NearCategoryListRepositoryImpl @Inject constructor(
 
                 Place(
                     id = document.id,
-                    placeName = document.place_name,
+                    name = document.place_name,
                     category = category,
                     phone = document.phone,
                     distance = document.distance,
@@ -51,14 +51,7 @@ class NearCategoryListRepositoryImpl @Inject constructor(
                 )
             }.let { categoryList.addAll(it) }
 
-            isEnd = categoryList.size >= response.meta.total_count
-
-            val gap = response.meta.total_count - categoryList.size
-            size = if (gap / 15 >= 1) {
-                15
-            } else {
-                gap
-            }
+            isEnd = response.meta.is_end
         }
 
         return categoryList

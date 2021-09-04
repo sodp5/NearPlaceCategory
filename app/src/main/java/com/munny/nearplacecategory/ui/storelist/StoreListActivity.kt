@@ -13,7 +13,7 @@ import javax.inject.Inject
 class StoreListActivity : BaseActivity<ActivityStoreListBinding>(R.layout.activity_store_list) {
     private val vm: StoreListViewModel by viewModels {
         val categoryItem = intent.extras?.getParcelable<CategoryItem>(EXTRA_CATEGORY_ITEM)
-            ?: throw Exception("need CategoryItems params!!")
+            ?: throw Exception("need CategoryItem params!!")
 
         StoreListViewModel.getFactory(factory, categoryItem.categoryName, categoryItem.placeList)
     }
@@ -25,6 +25,7 @@ class StoreListActivity : BaseActivity<ActivityStoreListBinding>(R.layout.activi
         super.onCreate(savedInstanceState)
         binding.vm = vm
 
+        binding.rvStoreList.adapter = StoreListAdapter()
     }
 
     companion object {
