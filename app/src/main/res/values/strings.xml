@@ -3,4 +3,6 @@
     
     <string name="near_search_suggest">주변의 음식점들을 확인 해보세요!</string>
     <string name="near_search_search">확인하기</string>
+
+    <string name="item_near_category_list_count">근처에 %d곳이 있어요!</string>
 </resources>

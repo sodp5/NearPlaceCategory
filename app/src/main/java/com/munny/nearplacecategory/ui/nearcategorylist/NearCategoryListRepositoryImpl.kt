@@ -1,5 +1,6 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
+import com.munny.nearplacecategory.model.Category
 import com.munny.nearplacecategory.model.Place
 import javax.inject.Inject
 
@@ -28,7 +29,16 @@ class NearCategoryListRepositoryImpl @Inject constructor(
             )
 
             response.documents.map { document ->
-                val category = document.category_name.split(">").map { it.trim() }
+                val splits = document.category_name.split(">").map { it.trim() }
+
+                val category = Category(splits[0])
+                var currCategory = category
+
+                splits.filterIndexed { index, _ ->  index != 0}
+                    .forEach {
+                        currCategory.category = Category(it)
+                        currCategory = currCategory.category ?: return@forEach
+                    }
 
                 Place(
                     id = document.id,

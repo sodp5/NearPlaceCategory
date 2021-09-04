@@ -13,7 +13,7 @@ class NearCategoryListDataSource @Inject constructor(
         longitude: Double,
         page: Int,
         radius: Int,
-        size: Int = 15
+        size: Int
     ): PlaceByCategoryResponse {
         return kakaoLocalApi.getPlaceByCategory(
             categoryCode,

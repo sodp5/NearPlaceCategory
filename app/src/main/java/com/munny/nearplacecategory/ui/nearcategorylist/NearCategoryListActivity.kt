@@ -24,6 +24,7 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.vm = vm
 
         binding.rvNearCategoryList.adapter = NearCategoryListAdapter()
     }
