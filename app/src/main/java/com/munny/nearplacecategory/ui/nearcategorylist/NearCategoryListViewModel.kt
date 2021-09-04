@@ -1,10 +1,15 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.api.KakaoLocalApi
 import com.munny.nearplacecategory.api.NaverCloudPlatformApi
 import com.munny.nearplacecategory.api.NaverSearchApi
+import com.munny.nearplacecategory.model.CategoryItem
+import com.munny.nearplacecategory.utils.CODE_RESTAURANT
+import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -12,21 +17,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NearCategoryListViewModel @Inject constructor(
-    private val searchApi: NaverSearchApi,
-    private val cloudPlatformApi: NaverCloudPlatformApi,
-    private val localApi: KakaoLocalApi
+    private val nearCategoryListRepository: NearCategoryListRepository
 ) : ViewModel() {
-    fun searchPoi(query: String) {
-        viewModelScope.launch {
-            searchApi.getPoi(query)
+    private val _categoryItems = MutableLiveData<CategoryItem>()
+    val categoryItems: LiveData<CategoryItem>
+        get() = _categoryItems
+
+    private var currentLatLng: LatLng? = null
+
+    fun setLatLng(latitude: Double, longitude: Double) {
+        val isInit = currentLatLng == null
+
+        currentLatLng = LatLng(latitude, longitude)
+
+        if (isInit) {
+            searchPoi()
         }
     }
 
-    fun getGeocoding(query: String, lon: Double, lat: Double) {
+    private fun searchPoi() {
+        val lat = currentLatLng?.latitude ?: return
+        val lng = currentLatLng?.longitude ?: return
+
         viewModelScope.launch {
-//            Timber.d("$lon, $lat")
-//            cloudPlatformApi.getGeocoding(query, "$lon, $lat")
-            localApi.getPlaceByCategory("FD6", lon.toString(), lat.toString(), 1000)
+            val response = nearCategoryListRepository.getPlaceByCategory(CODE_RESTAURANT, lat, lng)
+            Timber.d(response.toString())
+            Timber.d("size: ${response.size}")
         }
     }
+
 }

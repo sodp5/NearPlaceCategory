@@ -1,7 +1,7 @@
 package com.munny.nearplacecategory.di
 
 import com.munny.nearplacecategory.api.KakaoLocalApi
-import com.munny.nearplacecategory.base.ApiAuth
+import com.munny.nearplacecategory._base.ApiAuth
 import com.munny.nearplacecategory.api.NaverSearchApi
 import com.munny.nearplacecategory.api.NaverCloudPlatformApi
 import dagger.Module

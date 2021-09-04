@@ -2,20 +2,16 @@ package com.munny.nearplacecategory.ui.nearcategorylist
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.location.Location
-import android.os.Looper
+import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.CancellationToken
 import com.gun0912.tedpermission.coroutine.TedPermission
 import com.munny.nearplacecategory.R
-import com.munny.nearplacecategory.base.BaseActivity
+import com.munny.nearplacecategory._base.BaseActivity
 import com.munny.nearplacecategory.databinding.ActivityNearCategoryListBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
@@ -25,6 +21,12 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
         LocationServices.getFusedLocationProviderClient(this)
     }
     private val vm: NearCategoryListViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding.rvNearCategoryList.adapter = NearCategoryListAdapter()
+    }
 
     override fun onStart() {
         super.onStart()
@@ -47,6 +49,8 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
                 val locationCallBack = object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult) {
                         val location = result.lastLocation
+
+                        vm.setLatLng(location.latitude, location.longitude)
                     }
 
                     override fun onLocationAvailability(availability: LocationAvailability) = Unit

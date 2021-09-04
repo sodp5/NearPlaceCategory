@@ -1,6 +1,6 @@
 package com.munny.nearplacecategory.api
 
-import com.munny.nearplacecategory.base.ApiAuth
+import com.munny.nearplacecategory._base.ApiAuth
 import retrofit2.http.GET
 import retrofit2.http.Query
 

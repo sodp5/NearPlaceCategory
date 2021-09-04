@@ -1,4 +1,4 @@
-package com.munny.nearplacecategory.base
+package com.munny.nearplacecategory._base
 
 interface ApiAuth {
     fun getApiUrl(): String
