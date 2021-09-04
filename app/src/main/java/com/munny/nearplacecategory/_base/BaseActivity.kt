@@ -1,7 +1,5 @@
-package com.munny.nearplacecategory.base
+package com.munny.nearplacecategory._base
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity

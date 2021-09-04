@@ -3,7 +3,7 @@ package com.munny.nearplacecategory.ui.nearsearch
 import android.os.Bundle
 import com.munny.nearplacecategory.MapActivity
 import com.munny.nearplacecategory.R
-import com.munny.nearplacecategory.base.BaseActivity
+import com.munny.nearplacecategory._base.BaseActivity
 import com.munny.nearplacecategory.databinding.ActivityNearSearchBinding
 import com.munny.nearplacecategory.extensions.startActivity
 

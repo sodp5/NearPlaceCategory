@@ -1,6 +1,9 @@
 package com.munny.nearplacecategory.di
 
-import com.munny.nearplacecategory.api.PoiSearchApi
+import com.munny.nearplacecategory.api.KakaoLocalApi
+import com.munny.nearplacecategory._base.ApiAuth
+import com.munny.nearplacecategory.api.NaverSearchApi
+import com.munny.nearplacecategory.api.NaverCloudPlatformApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,6 +12,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
@@ -16,39 +21,58 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun providePoiSearchApi(): PoiSearchApi {
-        return getRetrofit().create(PoiSearchApi::class.java)
+    fun provideKakaoLocalApi(): KakaoLocalApi {
+        val auth = KakaoLocalApi.KakaoLocalAuth()
+
+        return getRetrofit(auth).create()
     }
 
-    private fun getRetrofit(): Retrofit {
+    @Singleton
+    @Provides
+    fun provideNaverSearchApi(): NaverSearchApi {
+        val auth = NaverSearchApi.NaverSearchAuth()
+
+        return getRetrofit(auth).create(NaverSearchApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideNaverCloudPlatformApi(): NaverCloudPlatformApi {
+        val auth = NaverCloudPlatformApi.NaverCloudPlatformAuth()
+
+        return getRetrofit(auth).create(NaverCloudPlatformApi::class.java)
+    }
+
+    private fun getRetrofit(auth: ApiAuth): Retrofit {
+        val url = auth.getApiUrl()
+        val headers = auth.getHeaders()
+
         return Retrofit.Builder()
-            .baseUrl(PoiSearchApi.URL)
-            .client(provideOkHttpClient())
+            .baseUrl(url)
+            .client(provideOkHttpClient(headers))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    private fun provideOkHttpClient(): OkHttpClient {
+    private fun provideOkHttpClient(headers: Map<String, Any>): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+            )
             .addInterceptor {
                 val newRequest = it.request().newBuilder()
-                    .addHeader("X-Naver-Client-Id", CLIENT_ID_V1)
-                    .addHeader("X-Naver-Client-Secret", CLIENT_SECRET_V1)
+                    .apply {
+                        headers.iterator().forEach { entry ->
+                            Timber.d("key: ${entry.key}, value: ${entry.value}")
+                            addHeader(entry.key, entry.value.toString())
+                        }
+                    }
                     .build()
 
                 it.proceed(newRequest)
             }
             .build()
-    }
-
-    companion object {
-        private const val CLIENT_ID_V2 = "emzppx9dn2"
-        private const val CLIENT_SECRET_V2 = "elfloCXeNXYxethM8sCTe2JkwhbgUgNsMFwiv2rg"
-
-        private const val CLIENT_ID_V1 = "qARRa6KY7uxFBhG905Sr"
-        private const val CLIENT_SECRET_V1 = "0fBpNmMXXH"
     }
 }

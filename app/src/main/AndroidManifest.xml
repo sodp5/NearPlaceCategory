@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.munny.nearplacecategory">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".NpcApplication"
         android:allowBackup="true"
@@ -10,6 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NearPlaceCategory">
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="emzppx9dn2" />
+
         <activity android:name=".MilestoneActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +27,8 @@
         </activity>
         <activity android:name=".MapActivity" />
         <activity android:name=".ui.nearsearch.NearSearchActivity" />
+        <activity android:name=".ui.nearcategorylist.NearCategoryListActivity" />
     </application>
+
 
 </manifest>
