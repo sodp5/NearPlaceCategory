@@ -1,5 +1,6 @@
 package com.munny.nearplacecategory.bindingadapters
 
+import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -12,5 +13,5 @@ fun setImageUrl(iv: ImageView, url: StoreImage?) {
             .load(it.url)
             .thumbnail(0.2f)
             .into(iv)
-    }
+    } ?: { iv.visibility = View.GONE }.invoke()
 }

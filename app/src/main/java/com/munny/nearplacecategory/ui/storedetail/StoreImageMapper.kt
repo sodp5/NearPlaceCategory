@@ -5,8 +5,11 @@ import com.munny.nearplacecategory.model.StoreImage
 
 class StoreImageMapper {
     fun imageSearchResponseToStoreImage(imageSearchResponse: ImageSearchResponse): StoreImage {
-        return imageSearchResponse.items.first().let {
+        val items = imageSearchResponse.items
+        val firstItem = items.firstOrNull()
+
+        return firstItem?.let {
             StoreImage(it.link, it.thumbnail)
-        }
+        } ?: StoreImage.Empty
     }
 }
