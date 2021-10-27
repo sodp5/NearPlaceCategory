@@ -9,7 +9,9 @@ import com.munny.nearplacecategory._base.BaseViewHolder
 import com.munny.nearplacecategory.databinding.ItemStoreListBinding
 import com.munny.nearplacecategory.model.Place
 
-class StoreListAdapter : BaseListAdapter<Place>(DIFF_UTIL) {
+class StoreListAdapter(
+    private val onStoreClickListener: (place: Place) -> Unit
+) : BaseListAdapter<Place>(DIFF_UTIL) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<Place> {
         return StoreListViewHolder(
             ItemStoreListBinding.inflate(
@@ -17,7 +19,12 @@ class StoreListAdapter : BaseListAdapter<Place>(DIFF_UTIL) {
                 parent,
                 false
             )
-        )
+        ).also { viewHolder ->
+            viewHolder.itemView.setOnClickListener {
+                val position = viewHolder.adapterPosition
+                onStoreClickListener.invoke(getItem(position))
+            }
+        }
     }
 
     companion object {

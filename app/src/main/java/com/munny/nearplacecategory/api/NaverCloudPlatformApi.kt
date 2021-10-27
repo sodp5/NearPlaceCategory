@@ -17,6 +17,14 @@ interface NaverCloudPlatformApi {
         @Query("coordinate") coordinate: String
     ): Any
 
+    @GET("map-static/v2/raster")
+    suspend fun getStaticMap(
+        @Query("center") lngLat: String,
+        @Query("width") width: Int,
+        @Query("height") height: Int,
+        @Query("level") level: Int = 5
+    ) : Any
+
     class NaverCloudPlatformAuth : ApiAuth {
         override fun getApiUrl(): String {
             return "https://naveropenapi.apigw.ntruss.com/"

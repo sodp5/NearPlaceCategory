@@ -1,6 +1,7 @@
 package com.munny.nearplacecategory.api
 
 import com.munny.nearplacecategory._base.ApiAuth
+import com.munny.nearplacecategory.api.response.ImageSearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -10,6 +11,13 @@ interface NaverSearchApi {
         @Query("query") query: String,
         @Query("display") display: Int = 5
     ): Any
+
+    @GET("v1/search/image")
+    suspend fun getImage(
+        @Query("query") query: String,
+        @Query("display") display: Int = 1,
+        @Query("sort") sort: String = "sim"
+    ): ImageSearchResponse
 
     class NaverSearchAuth : ApiAuth {
         override fun getApiUrl(): String {
