@@ -2,7 +2,7 @@ package com.munny.nearplacecategory.ui.article
 
 import androidx.lifecycle.*
 import com.munny.nearplacecategory.model.Place
-import com.munny.nearplacecategory.model.StoreImage
+import com.munny.nearplacecategory.model.ArticleImage
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
@@ -11,8 +11,8 @@ class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
     @Assisted private val place: Place
 ) : ViewModel() {
-    private val _image = MutableLiveData<StoreImage>()
-    val image: LiveData<StoreImage>
+    private val _image = MutableLiveData<ArticleImage>()
+    val image: LiveData<ArticleImage>
         get() = _image
 
     init {

@@ -6,11 +6,11 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.extensions.ifTrue
-import com.munny.nearplacecategory.model.StoreImage
+import com.munny.nearplacecategory.model.ArticleImage
 
 @BindingAdapter("setImageUrl")
-fun setImageUrl(iv: ImageView, storeImage: StoreImage?) {
-    storeImage?.url?.let {
+fun setImageUrl(iv: ImageView, articleImage: ArticleImage?) {
+    articleImage?.url?.let {
         it.isNotEmpty().ifTrue {
             Glide.with(iv.context)
                 .load(it)

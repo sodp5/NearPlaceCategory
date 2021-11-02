@@ -1,12 +1,12 @@
 package com.munny.nearplacecategory.ui.article
 
-import com.munny.nearplacecategory.model.StoreImage
+import com.munny.nearplacecategory.model.ArticleImage
 import javax.inject.Inject
 
 class ArticleRepositoryImpl @Inject constructor(
     private val articleDataSource: ArticleDataSource
 ) : ArticleRepository {
-    override suspend fun getImage(query: String): StoreImage {
+    override suspend fun getImage(query: String): ArticleImage {
         return articleDataSource.getImage(query)
     }
 

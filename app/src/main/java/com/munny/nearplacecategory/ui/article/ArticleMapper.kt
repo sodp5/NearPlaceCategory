@@ -1,15 +1,15 @@
 package com.munny.nearplacecategory.ui.article
 
 import com.munny.nearplacecategory.api.response.ImageSearchResponse
-import com.munny.nearplacecategory.model.StoreImage
+import com.munny.nearplacecategory.model.ArticleImage
 
 class ArticleMapper {
-    fun imageSearchResponseToStoreImage(imageSearchResponse: ImageSearchResponse): StoreImage {
+    fun imageSearchResponseToArticleImage(imageSearchResponse: ImageSearchResponse): ArticleImage {
         val items = imageSearchResponse.items
         val firstItem = items.firstOrNull()
 
         return firstItem?.let {
-            StoreImage(it.link, it.thumbnail)
-        } ?: StoreImage.Empty
+            ArticleImage(it.link, it.thumbnail)
+        } ?: ArticleImage.Empty
     }
 }
