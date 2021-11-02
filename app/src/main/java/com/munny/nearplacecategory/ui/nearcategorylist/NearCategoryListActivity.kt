@@ -11,7 +11,7 @@ import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory._base.BaseActivity
 import com.munny.nearplacecategory.databinding.ActivityNearCategoryListBinding
 import com.munny.nearplacecategory.extensions.startActivity
-import com.munny.nearplacecategory.ui.storelist.StoreListActivity
+import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -29,8 +29,8 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
         binding.vm = vm
 
         binding.rvNearCategoryList.adapter = NearCategoryListAdapter { categoryItem ->
-            startActivity<StoreListActivity>(Bundle().apply {
-                putParcelable(StoreListActivity.EXTRA_CATEGORY_ITEM, categoryItem)
+            startActivity<ArticleListActivity>(Bundle().apply {
+                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, categoryItem)
             })
         }
     }

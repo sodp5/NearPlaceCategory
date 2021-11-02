@@ -1,4 +1,4 @@
-package com.munny.nearplacecategory.ui.storelist
+package com.munny.nearplacecategory.ui.articlelist
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,10 +7,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.munny.nearplacecategory.model.Place
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-class StoreListViewModel @AssistedInject constructor(
+class ArticleListViewModel @AssistedInject constructor(
     @Assisted title: String,
     @Assisted placeList: List<Place>
 ) : ViewModel() {
@@ -29,7 +28,7 @@ class StoreListViewModel @AssistedInject constructor(
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(title: String, placeList: List<Place>): StoreListViewModel
+        fun create(title: String, placeList: List<Place>): ArticleListViewModel
     }
 
     companion object {

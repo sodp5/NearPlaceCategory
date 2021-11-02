@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.munny.nearplacecategory.ui.storedetail.StoreDetailViewModel" />
+            type="com.munny.nearplacecategory.ui.article.ArticleViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
