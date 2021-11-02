@@ -1,6 +1,7 @@
 package com.munny.nearplacecategory.ui.articlelist
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.viewModels
 import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory._base.BaseActivity
@@ -12,7 +13,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(R.layout.activity_article_list) {
+class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
+    R.layout.activity_article_list
+) {
     private val vm: ArticleListViewModel by viewModels {
         val categoryItem = intent.extras?.getParcelable<CategoryItem>(EXTRA_CATEGORY_ITEM)
             ?: throw Exception("need CategoryItem params!!")
@@ -27,10 +30,31 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(R.layout.ac
         super.onCreate(savedInstanceState)
         binding.vm = vm
 
-        binding.rvStoreList.adapter = ArticleListAdapter { place ->
+        binding.rvArticleList.adapter = ArticleListAdapter { place ->
             startActivity<ArticleActivity>(Bundle().apply {
                 putParcelable(ArticleActivity.EXTRA_PLACE, place)
             })
+        }
+
+        setupToolbar()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowTitleEnabled(false)
         }
     }
 
