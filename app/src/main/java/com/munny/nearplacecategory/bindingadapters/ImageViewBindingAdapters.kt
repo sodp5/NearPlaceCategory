@@ -4,14 +4,20 @@ import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.munny.nearplacecategory.extensions.ifFalse
+import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.model.StoreImage
 
 @BindingAdapter("setImageUrl")
-fun setImageUrl(iv: ImageView, url: StoreImage?) {
-    url?.let {
-        Glide.with(iv.context)
-            .load(it.url)
-            .thumbnail(0.2f)
-            .into(iv)
-    } ?: { iv.visibility = View.GONE }.invoke()
+fun setImageUrl(iv: ImageView, storeImage: StoreImage?) {
+    storeImage?.url?.let {
+        it.isNotEmpty().ifTrue {
+            Glide.with(iv.context)
+                .load(it)
+                .thumbnail(0.2f)
+                .into(iv)
+        }.ifFalse {
+            iv.visibility = View.GONE
+        }
+    }
 }
