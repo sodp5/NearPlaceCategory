@@ -1,5 +1,6 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
+import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.Place
 import javax.inject.Inject
 
@@ -28,17 +29,18 @@ class NearCategoryListRepositoryImpl @Inject constructor(
                 size
             )
 
-            categoryResponse.documents.map{ document ->
-                val articleImage = nearCategoryListDataSource.getArticleImage(document.place_name)
-
-                placeMapper.documentToPlace(document, articleImage)
-            }.let {
-                categoryList.addAll(it)
-            }
+            categoryResponse.documents.map(placeMapper::documentToPlace)
+                .also {
+                    categoryList.addAll(it)
+                }
 
             isEnd = categoryResponse.meta.is_end
         }
 
         return categoryList
+    }
+
+    override suspend fun getArticleImage(query: String): ArticleImage {
+        return nearCategoryListDataSource.getArticleImage(query)
     }
 }
