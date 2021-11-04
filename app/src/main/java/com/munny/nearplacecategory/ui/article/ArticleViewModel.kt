@@ -1,11 +1,13 @@
 package com.munny.nearplacecategory.ui.article
 
+import android.graphics.Bitmap
 import androidx.lifecycle.*
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.model.ArticleImage
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
@@ -15,28 +17,24 @@ class ArticleViewModel @AssistedInject constructor(
     val image: LiveData<ArticleImage>
         get() = _image
 
+    private val _staticMapImage = MutableLiveData<Bitmap>()
+    val staticMapImage: LiveData<Bitmap>
+        get() = _staticMapImage
+
     init {
-        searchImage(place.name)
-    }
-
-    private fun searchImage(query: String) {
-        viewModelScope.launch {
-            val result = articleRepository.getImage(query)
-
-            _image.value = result
-        }
+        _image.value = place.articleImage
     }
 
     fun getStaticMap(screenWidth: Int, screenHeight: Int) {
         viewModelScope.launch {
-//            val result = storeDetailRepository.getStaticMap(
-//                place.latitude,
-//                place.longitude,
-//                screenWidth,
-//                screenHeight
-//            )
-//
-//            Timber.d(result.toString())
+            val result = articleRepository.getStaticMap(
+                place.latitude,
+                place.longitude,
+                screenWidth,
+                screenHeight
+            )
+
+            _staticMapImage.value = result
         }
     }
 

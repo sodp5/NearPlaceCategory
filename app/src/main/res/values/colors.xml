@@ -9,5 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="text_black">#181818</color>
-    <color name="text_gray">#585858</color>
+    <color name="text_gray">#787878</color>
+
+    <color name="divider">#666</color>
 </resources>

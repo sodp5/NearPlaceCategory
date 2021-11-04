@@ -1,5 +1,7 @@
 package com.munny.nearplacecategory.bindingadapters
 
+import android.graphics.Bitmap
+import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -11,8 +13,8 @@ import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.model.ArticleImage
 
-@BindingAdapter("setArticleImage")
-fun setArticleImage(iv: ImageView, articleImage: ArticleImage?) {
+@BindingAdapter("setArticleThumbnailImage")
+fun setArticleThumbnailImage(iv: ImageView, articleImage: ArticleImage?) {
     articleImage?.url?.let {
         val roundedOption = RequestOptions()
         roundedOption.transform(CenterCrop(), RoundedCorners(32))
@@ -29,5 +31,27 @@ fun setArticleImage(iv: ImageView, articleImage: ArticleImage?) {
                 .apply(roundedOption)
                 .into(iv)
         }
+    }
+}
+
+@BindingAdapter("setArticleImage")
+fun setArticleImage(iv: ImageView, articleImage: ArticleImage?) {
+    articleImage?.url?.let {
+        it.isNotEmpty().ifTrue {
+            Glide.with(iv.context)
+                .load(it)
+                .thumbnail(0.2f)
+                .centerCrop()
+                .into(iv)
+        }.ifFalse {
+            iv.visibility = View.GONE
+        }
+    }
+}
+
+@BindingAdapter("setBitmap")
+fun setBitmap(iv: ImageView, bitmap: Bitmap?) {
+    bitmap?.let {
+        iv.setImageBitmap(it)
     }
 }

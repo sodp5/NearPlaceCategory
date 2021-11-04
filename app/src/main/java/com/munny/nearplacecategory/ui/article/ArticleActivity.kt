@@ -1,5 +1,6 @@
 package com.munny.nearplacecategory.ui.article
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.munny.nearplacecategory.R
@@ -27,7 +28,11 @@ class ArticleActivity : BaseActivity<ActivityArticleBinding>(
         super.onCreate(savedInstanceState)
         binding.vm = vm
 
-        vm.getStaticMap(500, 500)
+        binding.ivMap.run {
+            post {
+                vm.getStaticMap(width, height)
+            }
+        }
     }
 
     companion object {

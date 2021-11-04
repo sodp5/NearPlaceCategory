@@ -1,5 +1,7 @@
 package com.munny.nearplacecategory.ui.article
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.munny.nearplacecategory.api.NaverCloudPlatformApi
 import com.munny.nearplacecategory.api.NaverSearchApi
 import com.munny.nearplacecategory.model.ArticleImage
@@ -15,9 +17,14 @@ class ArticleDataSource @Inject constructor(
         return ArticleMapper().imageSearchResponseToArticleImage(response)
     }
 
-    suspend fun getStaticMap(latitude: Double, longitude: Double, width: Int, height: Int): Any {
+    suspend fun getStaticMap(latitude: Double, longitude: Double, width: Int, height: Int): Bitmap {
         val lngLat = "$longitude,$latitude"
+        val marker = "type:d|size:mid|pos:$longitude $latitude"
 
-        return naverCloudPlatformApi.getStaticMap(lngLat, width, height)
+//        val version = naverCloudPlatformApi.getLastVersion().version
+        val version = "1.1"
+        val body = naverCloudPlatformApi.getStaticMap(lngLat, marker, width, height, version)
+
+        return BitmapFactory.decodeStream(body.byteStream())
     }
 }
