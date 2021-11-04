@@ -1,6 +1,6 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
-import com.munny.nearplacecategory.model.Category
+import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.Place
 import javax.inject.Inject
 
@@ -13,13 +13,14 @@ class NearCategoryListRepositoryImpl @Inject constructor(
         latitude: Double,
         longitude: Double
     ): List<Place> {
+        val placeMapper = PlaceMapper()
         val categoryList = mutableListOf<Place>()
         var isEnd = false
         var page = 1
         val size = 15
 
         while (!isEnd) {
-            val response = nearCategoryListDataSource.getPlaceByCategory(
+            val categoryResponse = nearCategoryListDataSource.getPlaceByCategory(
                 categoryCode,
                 latitude,
                 longitude,
@@ -28,12 +29,18 @@ class NearCategoryListRepositoryImpl @Inject constructor(
                 size
             )
 
-            response.documents.map(PlaceMapper()::documentToPlace)
-                .let { categoryList.addAll(it) }
+            categoryResponse.documents.map(placeMapper::documentToPlace)
+                .also {
+                    categoryList.addAll(it)
+                }
 
-            isEnd = response.meta.is_end
+            isEnd = categoryResponse.meta.is_end
         }
 
         return categoryList
+    }
+
+    override suspend fun getArticleImage(query: String): ArticleImage {
+        return nearCategoryListDataSource.getArticleImage(query)
     }
 }

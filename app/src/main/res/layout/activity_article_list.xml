@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="vm"
-            type="com.munny.nearplacecategory.ui.storelist.StoreListViewModel" />
+            type="com.munny.nearplacecategory.ui.articlelist.ArticleListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,24 +18,25 @@
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:title="@{vm.title}"
-            app:titleCentered="true"
-            android:background="#5033aa66"
+            android:elevation="1dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@{vm.title}"
+            tools:title="한식" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_store_list"
+            android:id="@+id/rv_article_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="4dp"
-            app:submitList="@{vm.placeList}"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:submitList="@{vm.placeList}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

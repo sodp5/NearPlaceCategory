@@ -13,7 +13,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NearPlaceCategory">
+        android:theme="@style/Theme.NearPlaceCategory"
+        android:usesCleartextTraffic="true">
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="emzppx9dn2" />
@@ -28,7 +29,8 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".ui.nearsearch.NearSearchActivity" />
         <activity android:name=".ui.nearcategorylist.NearCategoryListActivity" />
-        <activity android:name=".ui.storelist.StoreListActivity" />
+        <activity android:name=".ui.articlelist.ArticleListActivity" />
+        <activity android:name=".ui.article.ArticleActivity" />
     </application>
 
 

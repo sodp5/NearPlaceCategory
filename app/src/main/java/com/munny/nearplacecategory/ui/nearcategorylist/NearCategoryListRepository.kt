@@ -1,5 +1,6 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
+import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.Place
 
 
@@ -9,4 +10,6 @@ interface NearCategoryListRepository {
         latitude: Double,
         longitude: Double
     ): List<Place>
+
+    suspend fun getArticleImage(query: String): ArticleImage
 }

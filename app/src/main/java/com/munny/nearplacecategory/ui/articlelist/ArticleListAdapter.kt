@@ -1,23 +1,29 @@
-package com.munny.nearplacecategory.ui.storelist
+package com.munny.nearplacecategory.ui.articlelist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import com.munny.nearplacecategory._base.BaseListAdapter
 import com.munny.nearplacecategory._base.BaseViewHolder
 import com.munny.nearplacecategory.databinding.ItemStoreListBinding
 import com.munny.nearplacecategory.model.Place
 
-class StoreListAdapter : BaseListAdapter<Place>(DIFF_UTIL) {
+class ArticleListAdapter(
+    private val onStoreClickListener: (place: Place) -> Unit
+) : BaseListAdapter<Place>(DIFF_UTIL) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<Place> {
-        return StoreListViewHolder(
+        return ArticleListViewHolder(
             ItemStoreListBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        )
+        ).also { viewHolder ->
+            viewHolder.itemView.setOnClickListener {
+                val position = viewHolder.adapterPosition
+                onStoreClickListener.invoke(getItem(position))
+            }
+        }
     }
 
     companion object {

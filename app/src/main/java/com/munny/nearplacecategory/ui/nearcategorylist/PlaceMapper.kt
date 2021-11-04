@@ -1,6 +1,7 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
 import com.munny.nearplacecategory.api.response.PlaceByCategoryResponse
+import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.Category
 import com.munny.nearplacecategory.model.Place
 
@@ -20,6 +21,7 @@ class PlaceMapper {
         return Place(
             id = document.id,
             name = document.place_name,
+            articleImage = null,
             category = category,
             phone = document.phone,
             distance = document.distance.toInt(),

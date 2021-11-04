@@ -1,4 +1,4 @@
-package com.munny.nearplacecategory.utils
+package com.munny.nearplacecategory.bindingadapters
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter

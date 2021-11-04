@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.utils.CODE_RESTAURANT
+import com.munny.nearplacecategory.utils.Event
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,6 +25,10 @@ class NearCategoryListViewModel @Inject constructor(
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean>
         get() = _isLoading
+
+    private val _selectCategoryEvent = MutableLiveData<Event<CategoryItem>>()
+    val selectCategoryEvent: LiveData<Event<CategoryItem>>
+        get() = _selectCategoryEvent
 
     private var currentLatLng: LatLng? = null
 
@@ -69,4 +74,18 @@ class NearCategoryListViewModel @Inject constructor(
         }
     }
 
+    fun setupArticleImages(categoryItem: CategoryItem) {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            val newCategoryItem = categoryItem.copy(
+                placeList = categoryItem.placeList.map {
+                    it.copy(articleImage = nearCategoryListRepository.getArticleImage(it.name))
+                }
+            )
+
+            _isLoading.value = false
+            _selectCategoryEvent.value = Event(newCategoryItem)
+        }
+    }
 }
