@@ -1,5 +1,7 @@
 package com.munny.nearplacecategory.ui.article
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -36,6 +38,12 @@ class ArticleActivity : BaseActivity<ActivityArticleBinding>(
     }
 
     companion object {
-        const val EXTRA_PLACE = "extra_place"
+        private const val EXTRA_PLACE = "extra_place"
+
+        fun getIntent(context: Context, place: Place): Intent {
+            return Intent(context, ArticleActivity::class.java).apply {
+                putExtra(EXTRA_PLACE, place)
+            }
+        }
     }
 }
