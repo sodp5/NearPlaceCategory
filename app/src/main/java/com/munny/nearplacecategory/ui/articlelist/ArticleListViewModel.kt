@@ -1,6 +1,8 @@
 package com.munny.nearplacecategory.ui.articlelist
 
 import androidx.lifecycle.*
+import com.munny.nearplacecategory.extensions.ifFalse
+import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.extensions.map
 import com.munny.nearplacecategory.model.Place
 import dagger.assisted.Assisted
@@ -44,6 +46,22 @@ class ArticleListViewModel @AssistedInject constructor(
     fun selectCategory(categoryName: String) {
         currCategoryList.add(categoryName)
 
+        refreshPlaceList()
+
+        depth++
+    }
+
+    fun removeLastCategory(): Boolean {
+        return (currCategoryList.size > 1).ifTrue {
+            currCategoryList.removeLast()
+
+            refreshPlaceList()
+
+            depth--
+        }
+    }
+
+    private fun refreshPlaceList() {
         var newPlaceList = orgPlaceList
 
         currCategoryList.forEach { category ->
@@ -54,8 +72,6 @@ class ArticleListViewModel @AssistedInject constructor(
 
         _placeList.value = newPlaceList
         _currCategory.value = currCategoryList.joinToString(">")
-
-        depth++
     }
 
     @dagger.assisted.AssistedFactory

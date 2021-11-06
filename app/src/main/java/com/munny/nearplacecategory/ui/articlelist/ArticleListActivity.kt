@@ -27,10 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory._base.BaseActivity
 import com.munny.nearplacecategory.databinding.ActivityArticleListBinding
+import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
@@ -61,11 +63,22 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
         }
     }
 
+    override fun onBackPressed() {
+        val vm = ViewModelProvider(
+            this,
+            vmFactory
+        )[ArticleListViewModel::class.java]
+
+        vm.removeLastCategory().ifFalse {
+            super.onBackPressed()
+        }
+    }
+
     @Composable
     fun ArticleListScreen() {
         Surface {
             Column {
-                Toolbar()
+                Toolbar { finish() }
                 Shadow()
                 Contents()
             }
@@ -74,7 +87,8 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
 
     @Composable
     fun Toolbar(
-        vm: ArticleListViewModel = viewModel(factory = vmFactory)
+        vm: ArticleListViewModel = viewModel(factory = vmFactory),
+        onBackPress: () -> Unit
     ) {
         val title by vm.title.observeAsState(initial = "")
 
@@ -88,7 +102,9 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
             Image(
                 painter = painterResource(id = R.drawable.ic_backpress_black_24dp),
                 contentDescription = "",
-                colorFilter = ColorFilter.tint(Color.Black)
+                colorFilter = ColorFilter.tint(Color.Black),
+                modifier = Modifier
+                    .clickable { onBackPress.invoke() }
             )
             Spacer(modifier = Modifier.size(20.dp))
             Text(
