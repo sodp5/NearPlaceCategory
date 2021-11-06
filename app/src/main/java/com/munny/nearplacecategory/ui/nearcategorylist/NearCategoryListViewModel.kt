@@ -11,7 +11,6 @@ import com.munny.nearplacecategory.utils.Event
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,15 +49,19 @@ class NearCategoryListViewModel @Inject constructor(
             _isLoading.value = true
 
             val placeList = nearCategoryListRepository.getPlaceByCategory(CODE_RESTAURANT, lat, lng)
-                .filter { it.category?.name == "음식점" }
+                .filter { it.categories[0] == "음식점" }
                 .map {
-                    it.copy(category = it.category?.category)
+                    it.copy(
+                        categories = it.categories.toMutableList().apply {
+                            removeAt(0)
+                        }
+                    )
                 }
 
 
             val map = hashMapOf<String, MutableList<Place>>()
             placeList.forEach { place ->
-                (place.category?.name ?: "기타").let { key ->
+                (place.categories.getOrNull(0) ?: "기타").let { key ->
                     if (!map.containsKey(key)) {
                         map[key] = mutableListOf()
                     }

@@ -8,7 +8,7 @@ data class Place(
     val id: Long,
     val name: String,
     val articleImage: ArticleImage?,
-    val category: Category?,
+    val categories: List<String>,
     val phone: String,
     val distance: Int,
     val longitude: Double,

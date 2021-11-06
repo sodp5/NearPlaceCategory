@@ -142,17 +142,25 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
     }
 
     @Composable
-    fun CategoryList() {
-        val list = remember { mutableStateListOf("한식", "중식", "일식") }
+    fun CategoryList(
+        vm: ArticleListViewModel = viewModel(factory = vmFactory)
+    ) {
+        val categories by vm.categoryList.observeAsState(emptyList())
+
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(list) { categoryItem ->
-                Category(item = categoryItem)
+            items(categories) { categoryItem ->
+                Category(item = categoryItem) {
+                    vm.selectCategory(categoryItem)
+                }
             }
         }
     }
 
     @Composable
-    fun Category(item: String) {
+    fun Category(
+        item: String,
+        onClickAction: () -> Unit
+    ) {
         Text(
             text = item,
             fontSize = 12.sp,
@@ -162,6 +170,9 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
                 .padding(
                     horizontal = 10.dp, vertical = 4.dp
                 )
+                .clickable {
+                    onClickAction.invoke()
+                }
         )
     }
 
