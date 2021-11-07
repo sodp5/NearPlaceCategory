@@ -11,7 +11,7 @@ import com.bumptech.glide.request.target.Target
 object GlideUtil {
     fun loadBitmap(
         context: Context,
-        url: String,
+        url: String?,
         onSuccessAction: ((bitmap: Bitmap?) -> Unit)? = null,
         onFailureAction: (() -> Unit)? = null
     ) {
