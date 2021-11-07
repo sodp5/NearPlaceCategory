@@ -14,4 +14,7 @@ object Colors {
     val White = Color(0xFFFFFFFF)
     val Gray = Color(0xFF777777)
 
+
+    val TextBlack = Color(0xFF181818)
+    val TextGray = Color(0xFF787878)
 }

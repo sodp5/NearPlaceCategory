@@ -2,39 +2,68 @@ package com.munny.nearplacecategory.ui.article
 
 import android.graphics.Bitmap
 import androidx.lifecycle.*
+import com.munny.nearplacecategory.extensions.map
+import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.model.ArticleImage
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import javax.inject.Inject
 
 class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
-    @Assisted private val place: Place
+    @Assisted place: Place
 ) : ViewModel() {
-    private val _image = MutableLiveData<ArticleImage>()
-    val image: LiveData<ArticleImage>
-        get() = _image
+    private val _place = MutableLiveData(place)
+    val place: LiveData<Place>
+        get() = _place
+
+    val articleImage: LiveData<ArticleImage>
+        get() = _place.map {
+            it.articleImage ?: ArticleImage.Empty
+        }
+
+    val articleName: LiveData<String>
+        get() = _place.map {
+            it.name
+        }
+
+    val categories: LiveData<String>
+        get() = _place.map {
+            it.categories.joinToString(", ")
+        }
+
+    val phoneNumber: LiveData<String>
+        get() = _place.map {
+            it.phone
+        }
+
+    val distance: LiveData<String>
+        get() = _place.map {
+            it.distance.toDistance()
+        }
 
     private val _staticMapImage = MutableLiveData<Bitmap>()
     val staticMapImage: LiveData<Bitmap>
         get() = _staticMapImage
 
     init {
-        _image.value = place.articleImage
+        getStaticMap()
     }
 
-    fun getStaticMap(screenWidth: Int, screenHeight: Int) {
+    private fun getStaticMap() {
         viewModelScope.launch {
-            val result = articleRepository.getStaticMap(
-                place.latitude,
-                place.longitude,
-                screenWidth,
-                screenHeight
-            )
+            place.value?.let {
+                val result = articleRepository.getStaticMap(
+                    it.latitude,
+                    it.longitude,
+                    600,
+                    400
+                )
 
-            _staticMapImage.value = result
+                _staticMapImage.value = result
+            }
         }
     }
 
