@@ -37,7 +37,6 @@ import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.article.ArticleActivity
-import com.munny.nearplacecategory.utils.GlideUtil
 import com.munny.nearplacecategory.values.Colors
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -203,15 +202,15 @@ class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
             )
         }
 
-        place.articleImage?.url?.let { url ->
-            GlideUtil.loadBitmap(
-                this,
-                url,
-                { bitmap ->
-                    placeImage.value = bitmap ?: return@loadBitmap
-                }
-            )
-        }
+//        place.articleImage?.url?.let { url ->
+//            GlideUtil.loadBitmap(
+//                this,
+//                url,
+//                { bitmap ->
+//                    placeImage.value = bitmap ?: return@loadBitmap
+//                }
+//            )
+//        }
 
         Card(
             shape = RoundedCornerShape(12.dp),

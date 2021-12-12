@@ -23,7 +23,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:setArticleThumbnailImage="@{place.articleImage}" />
+            />
 
         <TextView
             android:id="@+id/tv_name"
