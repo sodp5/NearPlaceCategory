@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.ArticleInfo
 import com.munny.nearplacecategory.values.Colors
@@ -43,7 +44,10 @@ fun ArticleScreen(
 
 @Composable
 fun PlaceImage(articleImage: ArticleImage) {
-    val placeImage = rememberImagePainter(articleImage.url)
+    val placeImage = rememberImagePainter(articleImage.url) {
+        placeholder(R.drawable.ic_restaurant_placeholder)
+        error(R.drawable.ic_restaurant_placeholder)
+    }
 
     articleImage.url.isEmpty().let {
         if (it) {
