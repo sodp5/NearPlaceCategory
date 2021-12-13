@@ -1,5 +1,10 @@
 package com.munny.nearplacecategory.ui.articlelist
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.*
 import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.extensions.ifTrue
@@ -13,26 +18,26 @@ class ArticleListViewModel @AssistedInject constructor(
     @Assisted private val orgCategoryName: String,
     @Assisted private val orgPlaceList: List<Place>
 ) : ViewModel() {
-    private val _title = MutableLiveData(orgCategoryName)
-    val title: LiveData<String>
+    private val _title = mutableStateOf(orgCategoryName)
+    val title: State<String>
         get() = _title
 
-    private val _currCategory = MutableLiveData<String>()
-    val currCategory: LiveData<String>
+    private val _currCategory = mutableStateOf("")
+    val currCategory: State<String>
         get() = _currCategory
 
-    private val _placeList = MutableLiveData(orgPlaceList)
-    val placeList: LiveData<List<Place>>
+    private val _placeList = mutableStateListOf<Place>().apply {
+        addAll(orgPlaceList)
+    }
+    val placeList: SnapshotStateList<Place>
         get() = _placeList
 
-    val categoryList: LiveData<List<String>>
-        get() = Transformations.map(placeList) {
-            it.associateBy { place ->
+    val categoryList: SnapshotStateList<String>
+        get() = placeList.associateBy { place ->
                 place.categories.getOrElse(depth) { "" }
             }.keys
                 .filter { key -> key.isNotEmpty() }
-                .toList()
-        }
+                .toMutableStateList()
 
     private val currCategoryList = arrayListOf(orgCategoryName)
 
@@ -40,7 +45,9 @@ class ArticleListViewModel @AssistedInject constructor(
 
     @Inject
     fun sortList() {
-        _placeList.value = placeList.value?.sortedBy { it.distance }
+        _placeList.sortedBy {
+            it.distance
+        }
     }
 
     fun selectCategory(categoryName: String) {
@@ -70,7 +77,10 @@ class ArticleListViewModel @AssistedInject constructor(
             }
         }
 
-        _placeList.value = newPlaceList
+        _placeList.run {
+            clear()
+            addAll(newPlaceList)
+        }
         _currCategory.value = currCategoryList.joinToString(">")
     }
 

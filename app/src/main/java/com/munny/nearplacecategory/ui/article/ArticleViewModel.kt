@@ -6,6 +6,7 @@ import com.munny.nearplacecategory.extensions.map
 import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.model.ArticleImage
+import com.munny.nearplacecategory.model.ArticleInfo
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
@@ -13,48 +14,42 @@ import javax.inject.Inject
 
 class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
-    @Assisted place: Place
+    @Assisted private val place: Place
 ) : ViewModel() {
-    private val _place = MutableLiveData(place)
-    val place: LiveData<Place>
-        get() = _place
+    private val _articleInfoState = MutableLiveData<ArticleInfo>()
+    val articleInfoState: LiveData<ArticleInfo>
+        get() = _articleInfoState
 
+    private val _articleImage = MutableLiveData<ArticleImage>()
     val articleImage: LiveData<ArticleImage>
-        get() = _place.map {
-            it.articleImage ?: ArticleImage.Empty
-        }
-
-    val articleName: LiveData<String>
-        get() = _place.map {
-            it.name
-        }
-
-    val categories: LiveData<String>
-        get() = _place.map {
-            it.categories.joinToString(", ")
-        }
-
-    val phoneNumber: LiveData<String>
-        get() = _place.map {
-            it.phone
-        }
-
-    val distance: LiveData<String>
-        get() = _place.map {
-            it.distance.toDistance()
-        }
+        get() = _articleImage
 
     private val _staticMapImage = MutableLiveData<Bitmap>()
     val staticMapImage: LiveData<Bitmap>
         get() = _staticMapImage
 
+
     init {
         getStaticMap()
+        initialize()
+    }
+
+    private fun initialize() {
+        place.let {
+            _articleInfoState.value = ArticleInfo(
+                name = it.name,
+                categories = it.categories.joinToString(", "),
+                phoneNumber = it.phone,
+                distance = it.distance.toDistance()
+            )
+
+            _articleImage.value = it.articleImage
+        }
     }
 
     private fun getStaticMap() {
         viewModelScope.launch {
-            place.value?.let {
+            place.let {
                 val result = articleRepository.getStaticMap(
                     it.latitude,
                     it.longitude,
