@@ -36,24 +36,16 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
             Screen(
                 nearCategoryListViewModel = vm,
                 nearCategoryClickEvent = {
-                    startActivity<ArticleListActivity>(Bundle().apply {
-                        putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
-                    })
+                    vm.setupArticleImages(it)
                 }
             )
         }
 
-//        binding.vm = vm
-//
-        binding.rvNearCategoryList.adapter = NearCategoryListAdapter { categoryItem ->
-            vm.setupArticleImages(categoryItem)
+        vm.selectCategoryEvent.observeEvent(this) {
+            startActivity<ArticleListActivity>(Bundle().apply {
+                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
+            })
         }
-//
-//        vm.selectCategoryEvent.observeEvent(this) {
-//            startActivity<ArticleListActivity>(Bundle().apply {
-//                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
-//            })
-//        }
     }
 
     override fun onStart() {
