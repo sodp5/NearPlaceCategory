@@ -1,5 +1,10 @@
 package com.munny.nearplacecategory.ui.nearcategorylist
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,12 +22,12 @@ import javax.inject.Inject
 class NearCategoryListViewModel @Inject constructor(
     private val nearCategoryListRepository: NearCategoryListRepository
 ) : ViewModel() {
-    private val _categoryItems = MutableLiveData<List<CategoryItem>>()
-    val categoryItems: LiveData<List<CategoryItem>>
+    private val _categoryItems = mutableStateListOf<CategoryItem>()
+    val categoryItems: SnapshotStateList<CategoryItem>
         get() = _categoryItems
 
-    private val _isLoading = MutableLiveData(false)
-    val isLoading: LiveData<Boolean>
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean>
         get() = _isLoading
 
     private val _selectCategoryEvent = MutableLiveData<Event<CategoryItem>>()
@@ -70,10 +75,15 @@ class NearCategoryListViewModel @Inject constructor(
                 }
             }
 
-            _categoryItems.value = map.toList()
+            val newItems = map.toList()
                 .map { CategoryItem(it.first, it.second) }
                 .sortedByDescending { it.placeList.size }
                 .also { _isLoading.value = false }
+
+            _categoryItems.run {
+                clear()
+                addAll(newItems)
+            }
         }
     }
 

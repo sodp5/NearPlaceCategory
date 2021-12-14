@@ -3,7 +3,11 @@ package com.munny.nearplacecategory.ui.nearcategorylist
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.location.*
 import com.gun0912.tedpermission.coroutine.TedPermission
@@ -11,6 +15,7 @@ import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory._base.BaseActivity
 import com.munny.nearplacecategory.databinding.ActivityNearCategoryListBinding
 import com.munny.nearplacecategory.extensions.startActivity
+import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
 import com.munny.nearplacecategory.utils.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,17 +32,28 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding.vm = vm
+        setContent {
+            Screen(
+                nearCategoryListViewModel = vm,
+                nearCategoryClickEvent = {
+                    startActivity<ArticleListActivity>(Bundle().apply {
+                        putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
+                    })
+                }
+            )
+        }
 
+//        binding.vm = vm
+//
         binding.rvNearCategoryList.adapter = NearCategoryListAdapter { categoryItem ->
             vm.setupArticleImages(categoryItem)
         }
-
-        vm.selectCategoryEvent.observeEvent(this) {
-            startActivity<ArticleListActivity>(Bundle().apply {
-                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
-            })
-        }
+//
+//        vm.selectCategoryEvent.observeEvent(this) {
+//            startActivity<ArticleListActivity>(Bundle().apply {
+//                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
+//            })
+//        }
     }
 
     override fun onStart() {
@@ -75,4 +91,28 @@ class NearCategoryListActivity : BaseActivity<ActivityNearCategoryListBinding>(
             }
         }
     }
+}
+
+@Composable
+private fun Screen(
+    nearCategoryListViewModel: NearCategoryListViewModel,
+    nearCategoryClickEvent: (CategoryItem) -> Unit
+) {
+    val loading by nearCategoryListViewModel.isLoading
+
+    NearCategoryListScreen(
+        categoryList = nearCategoryListViewModel.categoryItems,
+        isLoading = loading,
+        nearCategoryClickEvent = nearCategoryClickEvent
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewScreen() {
+    NearCategoryListScreen(
+        categoryList = emptyList(),
+        isLoading = true,
+        nearCategoryClickEvent = { }
+    )
 }
