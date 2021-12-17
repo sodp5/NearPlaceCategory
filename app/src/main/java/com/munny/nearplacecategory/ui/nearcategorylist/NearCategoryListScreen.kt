@@ -83,7 +83,6 @@ fun CategoryListItem(
 
         Text(
             text = categoryName,
-            fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
             modifier = Modifier
                 .constrainAs(categoryRef) {

@@ -13,7 +13,7 @@ class PlaceMapper {
             articleImage = null,
             categories = categories,
             phone = document.phone,
-            distance = document.distance.toInt(),
+            distance = document.distance.ifEmpty { "0" }.toInt(),
             longitude = document.longitude,
             latitude = document.latitude
         )
