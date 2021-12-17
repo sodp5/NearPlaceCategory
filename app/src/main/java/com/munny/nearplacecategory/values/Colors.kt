@@ -9,6 +9,8 @@ object Colors {
     val Lilac500 = Color(0xFFD8B9FF)
     val Lilac600 = Color(0xFFD2AFFF)
     val Lilac700 = Color(0xFFCA96FF)
+    val Lilac800 = Color(0xFFC082FF)
+    val Lilac900 = Color(0xFFB264FF)
 
     val Black = Color(0xFF000000)
     val White = Color(0xFFFFFFFF)

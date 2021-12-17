@@ -107,9 +107,11 @@ fun PlaceInfo(state: ArticleInfo) {
 }
 
 @Composable
-fun Divider() {
+fun Divider(
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(0.5.dp)
             .background(color = Colors.Gray)
