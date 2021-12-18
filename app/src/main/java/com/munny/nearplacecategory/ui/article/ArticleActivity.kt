@@ -52,9 +52,9 @@ class ArticleActivity : BaseActivity<ActivityArticleBinding>(
 
 @Composable
 private fun Screen(articleViewModel: ArticleViewModel) {
-    val articleImage by articleViewModel.articleImage.observeAsState(ArticleImage.Empty)
-    val articleInfo by articleViewModel.articleInfoState.observeAsState(ArticleInfo())
-    val placeMap by articleViewModel.staticMapImage.observeAsState()
+    val articleImage by articleViewModel.articleImage
+    val articleInfo by articleViewModel.articleInfoState
+    val placeMap by articleViewModel.staticMapImage
 
     ArticleScreen(articleImage, articleInfo, placeMap)
 }

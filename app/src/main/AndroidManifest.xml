@@ -19,7 +19,7 @@
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="emzppx9dn2" />
 
-        <activity android:name=".MilestoneActivity">
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +31,6 @@
         <activity android:name=".ui.nearcategorylist.NearCategoryListActivity" />
         <activity android:name=".ui.articlelist.ArticleListActivity" />
         <activity android:name=".ui.article.ArticleActivity" />
-        <activity android:name=".ui.main.MainActivity" />
     </application>
 
 

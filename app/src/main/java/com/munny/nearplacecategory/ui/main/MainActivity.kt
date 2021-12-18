@@ -8,15 +8,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.location.*
 import com.gun0912.tedpermission.coroutine.TedPermission
 import com.munny.nearplacecategory.extensions.startActivity
 import com.munny.nearplacecategory.model.CategoryItem
+import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.ui.article.ArticleActivity
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
+import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
 import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListScreen
 import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListViewModel
 import com.munny.nearplacecategory.utils.observeEvent
@@ -34,9 +35,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Screen(nearCategoryListViewModel) {
-                nearCategoryListViewModel.setupArticleImages(it)
-            }
+            Screen(
+                nearCategoryListViewModel = nearCategoryListViewModel,
+                nearCategoryClickEvent = {
+                    nearCategoryListViewModel.setupArticleImages(it)
+                },
+                placeClickEvent = {
+                    val intent = ArticleActivity.getIntent(this, it)
+
+                    startActivity(intent)
+                }
+            )
         }
 
         nearCategoryListViewModel.selectCategoryEvent.observeEvent(this) {
@@ -86,7 +95,8 @@ class MainActivity : AppCompatActivity() {
 @Composable
 private fun Screen(
     nearCategoryListViewModel: NearCategoryListViewModel,
-    nearCategoryClickEvent: (CategoryItem) -> Unit
+    nearCategoryClickEvent: (CategoryItem) -> Unit,
+    placeClickEvent: (Place) -> Unit
 ) {
     val loading by nearCategoryListViewModel.isLoading
 
@@ -103,7 +113,12 @@ private fun Screen(
     val randomNavItem = NavItem(
         navScreen = MainNavScreen.Random
     ) {
-
+        RandomPlaceScreen(
+            histories = nearCategoryListViewModel.categoryItems[2].placeList,
+            recentlyPlace = nearCategoryListViewModel.categoryItems[2].placeList[0]
+        ) {
+            placeClickEvent.invoke(it)
+        }
     }
 
     val favoriteNavItem = NavItem(
