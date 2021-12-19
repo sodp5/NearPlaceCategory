@@ -39,8 +39,4 @@ class NearCategoryListRepositoryImpl @Inject constructor(
 
         return categoryList
     }
-
-    override suspend fun getArticleImage(query: String): ArticleImage {
-        return nearCategoryListDataSource.getArticleImage(query)
-    }
 }

@@ -3,20 +3,23 @@ package com.munny.nearplacecategory.ui.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.location.*
 import com.gun0912.tedpermission.coroutine.TedPermission
 import com.munny.nearplacecategory.extensions.startActivity
 import com.munny.nearplacecategory.model.CategoryItem
+import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.ui.article.ArticleActivity
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
+import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
+import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListScreen
 import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListViewModel
 import com.munny.nearplacecategory.utils.observeEvent
@@ -26,6 +29,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val nearCategoryListViewModel: NearCategoryListViewModel by viewModels()
+    private val randomPlaceViewModel: RandomPlaceViewModel by viewModels()
 
     private val locationProvider by lazy {
         LocationServices.getFusedLocationProviderClient(this)
@@ -34,22 +38,43 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Screen(nearCategoryListViewModel) {
-                nearCategoryListViewModel.setupArticleImages(it)
-            }
+            Screen(
+                nearCategoryListViewModel = nearCategoryListViewModel,
+                nearCategoryClickEvent = {
+                    nearCategoryListViewModel.setupArticleImages(it)
+                },
+                randomPlaceViewModel = randomPlaceViewModel,
+                placeClickEvent = {
+                    val intent = ArticleActivity.getIntent(this, it)
+
+                    startActivity(intent)
+                }
+            )
         }
 
-        nearCategoryListViewModel.selectCategoryEvent.observeEvent(this) {
-            startActivity<ArticleListActivity>(Bundle().apply {
-                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
-            })
-        }
+        observeViewModel()
     }
 
     override fun onStart() {
         super.onStart()
 
         enableLocationListener()
+    }
+
+    private fun observeViewModel() {
+        nearCategoryListViewModel.selectCategoryEvent.observeEvent(this) {
+            startActivity<ArticleListActivity>(Bundle().apply {
+                putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
+            })
+        }
+
+        nearCategoryListViewModel.searchPoiEvent.observeEvent(this) {
+            randomPlaceViewModel.setAllPlace(it)
+        }
+
+        randomPlaceViewModel.toastMessage.observeEvent(this) {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun enableLocationListener() {
@@ -86,46 +111,78 @@ class MainActivity : AppCompatActivity() {
 @Composable
 private fun Screen(
     nearCategoryListViewModel: NearCategoryListViewModel,
-    nearCategoryClickEvent: (CategoryItem) -> Unit
+    nearCategoryClickEvent: (CategoryItem) -> Unit,
+    randomPlaceViewModel: RandomPlaceViewModel,
+    placeClickEvent: (Place) -> Unit
 ) {
-    val loading by nearCategoryListViewModel.isLoading
+    val nearNavItem = getNearCategoryListNavItem(
+        nearCategoryListViewModel = nearCategoryListViewModel,
+        nearCategoryClickEvent = nearCategoryClickEvent
+    )
 
-    val nearNavItem = NavItem(
-        navScreen = MainNavScreen.Near
-    ) {
-        NearCategoryListScreen(
-            categoryList = nearCategoryListViewModel.categoryItems,
-            isLoading = loading,
-            nearCategoryClickEvent = nearCategoryClickEvent
-        )
-    }
+    val randomNavItem = getRandomPlaceNavItem(
+        randomPlaceViewModel = randomPlaceViewModel,
+        placeClickEvent = placeClickEvent
+    )
 
-    val randomNavItem = NavItem(
-        navScreen = MainNavScreen.Random
-    ) {
+    val favoriteNavItem = getFavoriteNavItem()
 
-    }
-
-    val favoriteNavItem = NavItem(
-        navScreen = MainNavScreen.Favorite
-    ) {
-
-    }
-
-    val infoNavItem = NavItem(
-        navScreen = MainNavScreen.Info
-    ) {
-
-    }
+    val infoNavItem = getInfoNavItem()
 
     val screenList = listOf(
-            nearNavItem,
-            randomNavItem,
-            favoriteNavItem,
-            infoNavItem
-        )
+        nearNavItem,
+        randomNavItem,
+        favoriteNavItem,
+        infoNavItem
+    )
 
     MainScreen(screenList)
+}
+
+private fun getNearCategoryListNavItem(
+    nearCategoryListViewModel: NearCategoryListViewModel,
+    nearCategoryClickEvent: (CategoryItem) -> Unit,
+) = NavItem(
+    navScreen = MainNavScreen.Near
+) {
+    val isLoading by nearCategoryListViewModel.isLoading
+
+    NearCategoryListScreen(
+        categoryList = nearCategoryListViewModel.categoryItems,
+        isLoading = isLoading,
+        nearCategoryClickEvent = nearCategoryClickEvent
+    )
+}
+
+private fun getRandomPlaceNavItem(
+    randomPlaceViewModel: RandomPlaceViewModel,
+    placeClickEvent: (Place) -> Unit
+) = NavItem(
+    navScreen = MainNavScreen.Random
+) {
+    val recentlyPlace by randomPlaceViewModel.recentlyPlace
+    val isLoading by randomPlaceViewModel.isLoading
+
+    RandomPlaceScreen(
+        histories = randomPlaceViewModel.histories,
+        recentlyPlace = recentlyPlace,
+        isLoading = isLoading,
+        onPlaceClickEvent = placeClickEvent,
+        selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace,
+        onRefreshEvent = randomPlaceViewModel::onRefresh
+    )
+}
+
+private fun getFavoriteNavItem() = NavItem(
+    navScreen = MainNavScreen.Favorite
+) {
+
+}
+
+private fun getInfoNavItem() = NavItem(
+    navScreen = MainNavScreen.Info
+) {
+
 }
 
 @Preview(showBackground = true)

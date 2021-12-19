@@ -129,9 +129,10 @@ fun Contents(
         }
         item { Spacer(modifier = Modifier.size(16.dp)) }
         items(placeList) { article ->
-            ArticlePreview(article) {
+            ArticleItem(article) {
                 itemClickEvent.invoke(article)
             }
+            Spacer(modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -171,10 +172,8 @@ fun Category(
 }
 
 @Composable
-fun ArticlePreview(place: Place, onClickAction: () -> Unit) {
-    val placeImage = rememberImagePainter(
-        place.articleImage?.url
-    ) {
+fun ArticleItem(place: Place, onClickAction: () -> Unit) {
+    val placeImage = rememberImagePainter(place.articleImage?.url) {
         placeholder(R.drawable.ic_restaurant_placeholder)
         error(R.drawable.ic_restaurant_placeholder)
     }
@@ -216,5 +215,4 @@ fun ArticlePreview(place: Place, onClickAction: () -> Unit) {
             Spacer(modifier = Modifier.size(16.dp))
         }
     }
-    Spacer(modifier = Modifier.size(16.dp))
 }

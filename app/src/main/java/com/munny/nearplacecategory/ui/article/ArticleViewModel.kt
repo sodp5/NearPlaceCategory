@@ -1,6 +1,9 @@
 package com.munny.nearplacecategory.ui.article
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.munny.nearplacecategory.extensions.map
 import com.munny.nearplacecategory.extensions.toDistance
@@ -16,16 +19,16 @@ class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
     @Assisted private val place: Place
 ) : ViewModel() {
-    private val _articleInfoState = MutableLiveData<ArticleInfo>()
-    val articleInfoState: LiveData<ArticleInfo>
+    private val _articleInfoState = mutableStateOf(ArticleInfo())
+    val articleInfoState: State<ArticleInfo>
         get() = _articleInfoState
 
-    private val _articleImage = MutableLiveData<ArticleImage>()
-    val articleImage: LiveData<ArticleImage>
+    private val _articleImage = mutableStateOf(ArticleImage.Empty)
+    val articleImage: State<ArticleImage>
         get() = _articleImage
 
-    private val _staticMapImage = MutableLiveData<Bitmap>()
-    val staticMapImage: LiveData<Bitmap>
+    private val _staticMapImage = mutableStateOf<Bitmap>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+    val staticMapImage: State<Bitmap>
         get() = _staticMapImage
 
 
@@ -43,7 +46,7 @@ class ArticleViewModel @AssistedInject constructor(
                 distance = it.distance.toDistance()
             )
 
-            _articleImage.value = it.articleImage
+            _articleImage.value = it.articleImage ?: return@let
         }
     }
 

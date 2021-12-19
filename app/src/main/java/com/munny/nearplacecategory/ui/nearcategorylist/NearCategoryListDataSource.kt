@@ -8,8 +8,7 @@ import com.munny.nearplacecategory.ui.article.ArticleMapper
 import javax.inject.Inject
 
 class NearCategoryListDataSource @Inject constructor(
-    private val kakaoLocalApi: KakaoLocalApi,
-    private val naverSearchApi: NaverSearchApi
+    private val kakaoLocalApi: KakaoLocalApi
 ) {
     suspend fun getPlaceByCategory(
         categoryCode: String,
@@ -27,11 +26,5 @@ class NearCategoryListDataSource @Inject constructor(
             radius,
             size
         )
-    }
-
-    suspend fun getArticleImage(query: String): ArticleImage {
-        val response = naverSearchApi.getImage(query)
-
-        return ArticleMapper().imageSearchResponseToArticleImage(response)
     }
 }
