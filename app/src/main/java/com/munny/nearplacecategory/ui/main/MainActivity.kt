@@ -115,54 +115,74 @@ private fun Screen(
     randomPlaceViewModel: RandomPlaceViewModel,
     placeClickEvent: (Place) -> Unit
 ) {
-    val loading by nearCategoryListViewModel.isLoading
+    val nearNavItem = getNearCategoryListNavItem(
+        nearCategoryListViewModel = nearCategoryListViewModel,
+        nearCategoryClickEvent = nearCategoryClickEvent
+    )
 
-    val nearNavItem = NavItem(
-        navScreen = MainNavScreen.Near
-    ) {
-        NearCategoryListScreen(
-            categoryList = nearCategoryListViewModel.categoryItems,
-            isLoading = loading,
-            nearCategoryClickEvent = nearCategoryClickEvent
-        )
-    }
+    val randomNavItem = getRandomPlaceNavItem(
+        randomPlaceViewModel = randomPlaceViewModel,
+        placeClickEvent = placeClickEvent
+    )
 
+    val favoriteNavItem = getFavoriteNavItem()
+
+    val infoNavItem = getInfoNavItem()
+
+    val screenList = listOf(
+        nearNavItem,
+        randomNavItem,
+        favoriteNavItem,
+        infoNavItem
+    )
+
+    MainScreen(screenList)
+}
+
+private fun getNearCategoryListNavItem(
+    nearCategoryListViewModel: NearCategoryListViewModel,
+    nearCategoryClickEvent: (CategoryItem) -> Unit,
+) = NavItem(
+    navScreen = MainNavScreen.Near
+) {
+    val isLoading by nearCategoryListViewModel.isLoading
+
+    NearCategoryListScreen(
+        categoryList = nearCategoryListViewModel.categoryItems,
+        isLoading = isLoading,
+        nearCategoryClickEvent = nearCategoryClickEvent
+    )
+}
+
+private fun getRandomPlaceNavItem(
+    randomPlaceViewModel: RandomPlaceViewModel,
+    placeClickEvent: (Place) -> Unit
+) = NavItem(
+    navScreen = MainNavScreen.Random
+) {
     val recentlyPlace by randomPlaceViewModel.recentlyPlace
     val isLoading by randomPlaceViewModel.isLoading
 
-    val randomNavItem = NavItem(
-        navScreen = MainNavScreen.Random
-    ) {
-        RandomPlaceScreen(
-            histories = randomPlaceViewModel.histories,
-            recentlyPlace = recentlyPlace,
-            isLoading = isLoading,
-            onPlaceClickEvent = placeClickEvent,
-            selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace,
-            onRefreshEvent = randomPlaceViewModel::onRefresh
-        )
-    }
+    RandomPlaceScreen(
+        histories = randomPlaceViewModel.histories,
+        recentlyPlace = recentlyPlace,
+        isLoading = isLoading,
+        onPlaceClickEvent = placeClickEvent,
+        selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace,
+        onRefreshEvent = randomPlaceViewModel::onRefresh
+    )
+}
 
-    val favoriteNavItem = NavItem(
-        navScreen = MainNavScreen.Favorite
-    ) {
+private fun getFavoriteNavItem() = NavItem(
+    navScreen = MainNavScreen.Favorite
+) {
 
-    }
+}
 
-    val infoNavItem = NavItem(
-        navScreen = MainNavScreen.Info
-    ) {
+private fun getInfoNavItem() = NavItem(
+    navScreen = MainNavScreen.Info
+) {
 
-    }
-
-    val screenList = listOf(
-            nearNavItem,
-            randomNavItem,
-            favoriteNavItem,
-            infoNavItem
-        )
-
-    MainScreen(screenList)
 }
 
 @Preview(showBackground = true)
