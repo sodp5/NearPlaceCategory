@@ -3,6 +3,7 @@ package com.munny.nearplacecategory.ui.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +52,16 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        observeViewModel()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        enableLocationListener()
+    }
+
+    private fun observeViewModel() {
         nearCategoryListViewModel.selectCategoryEvent.observeEvent(this) {
             startActivity<ArticleListActivity>(Bundle().apply {
                 putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
@@ -60,12 +71,10 @@ class MainActivity : AppCompatActivity() {
         nearCategoryListViewModel.searchPoiEvent.observeEvent(this) {
             randomPlaceViewModel.setAllPlace(it)
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
-
-        enableLocationListener()
+        randomPlaceViewModel.toastMessage.observeEvent(this) {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun enableLocationListener() {
@@ -119,6 +128,7 @@ private fun Screen(
     }
 
     val recentlyPlace by randomPlaceViewModel.recentlyPlace
+    val isLoading by randomPlaceViewModel.isLoading
 
     val randomNavItem = NavItem(
         navScreen = MainNavScreen.Random
@@ -126,8 +136,10 @@ private fun Screen(
         RandomPlaceScreen(
             histories = randomPlaceViewModel.histories,
             recentlyPlace = recentlyPlace,
+            isLoading = isLoading,
             onPlaceClickEvent = placeClickEvent,
-            selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace
+            selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace,
+            onRefreshEvent = randomPlaceViewModel::onRefresh
         )
     }
 
