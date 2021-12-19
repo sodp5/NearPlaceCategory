@@ -6,8 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,43 +23,65 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.munny.nearplacecategory.R
+import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.article.Divider
 import com.munny.nearplacecategory.ui.articlelist.ArticleItem
+import com.munny.nearplacecategory.ui.main.MainNavScreen
+import com.munny.nearplacecategory.values.Colors.Lilac500
+import com.munny.nearplacecategory.values.Colors.Lilac700
 import com.munny.nearplacecategory.values.Colors.TextBlack
 
 @Composable
 fun RandomPlaceScreen(
     histories: List<Place>,
     recentlyPlace: Place?,
-    onPlaceClickEvent: (Place) -> Unit
+    onPlaceClickEvent: (Place) -> Unit,
+    selectRandomPlaceEvent: () -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-    ) {
-        recentlyPlace?.let {
-            item {
-                ArticleItem(place = it) {
-                    onPlaceClickEvent.invoke(it)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = selectRandomPlaceEvent,
+                backgroundColor = Lilac500,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = MainNavScreen.Random.icon,
+                    contentDescription = null
+                )
+            }
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+        ) {
+            recentlyPlace?.let {
+                item {
+                    ArticleItem(place = it) {
+                        onPlaceClickEvent.invoke(it)
+                    }
                 }
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.size(12.dp))
-            RandomArticleHeader()
-        }
-
-        items(
-            items = histories,
-            key = { it.id }
-        ) { place ->
-            RandomArticleHistory(place = place) {
-                onPlaceClickEvent.invoke(place)
+            histories.isNotEmpty().ifTrue {
+                item {
+                    Spacer(modifier = Modifier.size(12.dp))
+                    RandomArticleHeader()
+                }
             }
-            Divider()
+
+            items(
+                items = histories,
+                key = { it.id }
+            ) { place ->
+                RandomArticleHistory(place = place) {
+                    onPlaceClickEvent.invoke(place)
+                }
+                Divider()
+            }
         }
     }
 }
@@ -128,7 +150,8 @@ fun RandomPlaceScreenPreview() {
             Place(0, "hello", null, emptyList(), "", 10, 0.0, 0.0),
             Place(1, "hello", null, emptyList(), "", 10, 0.0, 0.0)
         ),
-        Place(1, "hello", null, emptyList(), "", 10, 0.0, 0.0)
+        Place(1, "hello", null, emptyList(), "", 10, 0.0, 0.0),
+        {}
     ) {
 
     }

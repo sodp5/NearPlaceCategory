@@ -34,6 +34,10 @@ class NearCategoryListViewModel @Inject constructor(
     val selectCategoryEvent: LiveData<Event<CategoryItem>>
         get() = _selectCategoryEvent
 
+    private val _searchPoiEvent = MutableLiveData<Event<List<Place>>>()
+    val searchPoiEvent: LiveData<Event<List<Place>>>
+        get() = _searchPoiEvent
+
     private var currentLatLng: LatLng? = null
 
     fun setLatLng(latitude: Double, longitude: Double) {
@@ -84,6 +88,10 @@ class NearCategoryListViewModel @Inject constructor(
                 clear()
                 addAll(newItems)
             }
+
+
+            val allPlaces = categoryItems.map { it.placeList }.flatten()
+            _searchPoiEvent.value = Event(allPlaces)
         }
     }
 

@@ -18,6 +18,7 @@ import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.article.ArticleActivity
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
+import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListScreen
 import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListViewModel
 import com.munny.nearplacecategory.utils.observeEvent
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val nearCategoryListViewModel: NearCategoryListViewModel by viewModels()
+    private val randomPlaceViewModel: RandomPlaceViewModel by viewModels()
 
     private val locationProvider by lazy {
         LocationServices.getFusedLocationProviderClient(this)
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
                 nearCategoryClickEvent = {
                     nearCategoryListViewModel.setupArticleImages(it)
                 },
+                randomPlaceViewModel = randomPlaceViewModel,
                 placeClickEvent = {
                     val intent = ArticleActivity.getIntent(this, it)
 
@@ -52,6 +55,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<ArticleListActivity>(Bundle().apply {
                 putParcelable(ArticleListActivity.EXTRA_CATEGORY_ITEM, it)
             })
+        }
+
+        nearCategoryListViewModel.searchPoiEvent.observeEvent(this) {
+            randomPlaceViewModel.setAllPlace(it)
         }
     }
 
@@ -96,6 +103,7 @@ class MainActivity : AppCompatActivity() {
 private fun Screen(
     nearCategoryListViewModel: NearCategoryListViewModel,
     nearCategoryClickEvent: (CategoryItem) -> Unit,
+    randomPlaceViewModel: RandomPlaceViewModel,
     placeClickEvent: (Place) -> Unit
 ) {
     val loading by nearCategoryListViewModel.isLoading
@@ -110,15 +118,17 @@ private fun Screen(
         )
     }
 
+    val recentlyPlace by randomPlaceViewModel.recentlyPlace
+
     val randomNavItem = NavItem(
         navScreen = MainNavScreen.Random
     ) {
         RandomPlaceScreen(
-            histories = nearCategoryListViewModel.categoryItems[2].placeList,
-            recentlyPlace = nearCategoryListViewModel.categoryItems[2].placeList[0]
-        ) {
-            placeClickEvent.invoke(it)
-        }
+            histories = randomPlaceViewModel.histories,
+            recentlyPlace = recentlyPlace,
+            onPlaceClickEvent = placeClickEvent,
+            selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace
+        )
     }
 
     val favoriteNavItem = NavItem(
