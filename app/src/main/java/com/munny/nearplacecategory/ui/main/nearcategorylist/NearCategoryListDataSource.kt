@@ -1,10 +1,7 @@
-package com.munny.nearplacecategory.ui.nearcategorylist
+package com.munny.nearplacecategory.ui.main.nearcategorylist
 
 import com.munny.nearplacecategory.api.KakaoLocalApi
-import com.munny.nearplacecategory.api.NaverSearchApi
 import com.munny.nearplacecategory.api.response.PlaceByCategoryResponse
-import com.munny.nearplacecategory.model.ArticleImage
-import com.munny.nearplacecategory.ui.article.ArticleMapper
 import javax.inject.Inject
 
 class NearCategoryListDataSource @Inject constructor(

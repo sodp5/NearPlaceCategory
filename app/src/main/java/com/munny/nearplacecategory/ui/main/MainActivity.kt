@@ -20,8 +20,8 @@ import com.munny.nearplacecategory.ui.article.ArticleActivity
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
-import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListScreen
-import com.munny.nearplacecategory.ui.nearcategorylist.NearCategoryListViewModel
+import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListScreen
+import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListViewModel
 import com.munny.nearplacecategory.utils.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

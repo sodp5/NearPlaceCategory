@@ -3,12 +3,10 @@ package com.munny.nearplacecategory.ui.articlelist
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.munny.nearplacecategory.R
-import com.munny.nearplacecategory._base.BaseActivity
-import com.munny.nearplacecategory.databinding.ActivityArticleListBinding
 import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
@@ -17,9 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ArticleListActivity : BaseActivity<ActivityArticleListBinding>(
-    R.layout.activity_article_list
-) {
+class ArticleListActivity : AppCompatActivity() {
     private val vm: ArticleListViewModel by viewModels {
         val categoryItem = intent.extras?.getParcelable(EXTRA_CATEGORY_ITEM)
             ?: CategoryItem("", emptyList())
