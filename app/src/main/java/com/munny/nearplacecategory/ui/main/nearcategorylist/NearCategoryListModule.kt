@@ -1,4 +1,4 @@
-package com.munny.nearplacecategory.ui.nearcategorylist
+package com.munny.nearplacecategory.ui.main.nearcategorylist
 
 import dagger.Binds
 import dagger.Module
