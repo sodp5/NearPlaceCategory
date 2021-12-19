@@ -5,16 +5,17 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.model.Place
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.munny.nearplacecategory.ui.shared.articleimage.ArticleImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RandomPlaceViewModel @Inject constructor() : ViewModel() {
+class RandomPlaceViewModel @Inject constructor(
+    private val articleImageRepository: ArticleImageRepository
+) : ViewModel() {
     private val _histories = mutableStateListOf<Place>()
     val histories: SnapshotStateList<Place>
         get() = _histories
@@ -33,10 +34,14 @@ class RandomPlaceViewModel @Inject constructor() : ViewModel() {
     }
 
     fun selectRandomPlace() {
-        _recentlyPlace.value?.let {
-            _histories.add(0, it)
-        }
+        viewModelScope.launch {
+            val randomPlace = allPlace.random()
+            val articleImage = articleImageRepository.getArticleImage(randomPlace.name)
 
-        _recentlyPlace.value = allPlace.random()
+            _recentlyPlace.value?.let {
+                _histories.add(0, it)
+            }
+            _recentlyPlace.value = randomPlace.copy(articleImage = articleImage)
+        }
     }
 }

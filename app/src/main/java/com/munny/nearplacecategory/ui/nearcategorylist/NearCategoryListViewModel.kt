@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.ui.shared.articleimage.ArticleImageRepository
 import com.munny.nearplacecategory.utils.CODE_RESTAURANT
 import com.munny.nearplacecategory.utils.Event
 import com.naver.maps.geometry.LatLng
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NearCategoryListViewModel @Inject constructor(
-    private val nearCategoryListRepository: NearCategoryListRepository
+    private val nearCategoryListRepository: NearCategoryListRepository,
+    private val articleImageRepository: ArticleImageRepository
 ) : ViewModel() {
     private val _categoryItems = mutableStateListOf<CategoryItem>()
     val categoryItems: SnapshotStateList<CategoryItem>
@@ -101,7 +103,7 @@ class NearCategoryListViewModel @Inject constructor(
 
             val newCategoryItem = categoryItem.copy(
                 placeList = categoryItem.placeList.map {
-                    it.copy(articleImage = nearCategoryListRepository.getArticleImage(it.name))
+                    it.copy(articleImage = articleImageRepository.getArticleImage(it.name))
                 }
             )
 
