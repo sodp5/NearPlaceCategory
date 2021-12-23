@@ -15,6 +15,9 @@ abstract class PlaceDao {
     @Query("DELETE FROM PlaceEntity WHERE id = :placeId")
     abstract suspend fun deletePlace(placeId: Long)
 
+    @Query("DELETE FROM PlaceEntity")
+    abstract suspend fun deleteAll()
+
     @Query("SELECT * FROM PlaceEntity")
     abstract suspend fun getAllPlace(): List<PlaceEntity>
 }

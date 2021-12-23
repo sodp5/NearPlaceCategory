@@ -20,8 +20,12 @@ class FavoriteDataSource @Inject constructor(
     }
 
     suspend fun getAllPlace(): List<Place> {
-        return placeDao.getAllPlace().map(
-            placeEntityMapper::toPlace
-        )
+        return placeDao.getAllPlace()
+            .sortedBy {
+                -it.mills
+            }
+            .map(
+                placeEntityMapper::toPlace
+            )
     }
 }

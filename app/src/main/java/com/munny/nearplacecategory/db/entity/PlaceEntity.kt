@@ -10,6 +10,7 @@ import com.munny.nearplacecategory.model.Place
 data class PlaceEntity(
     @PrimaryKey
     val id: Long,
+    val mills: Long,
     val place: Place
 )
 

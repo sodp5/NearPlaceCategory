@@ -7,6 +7,7 @@ class PlaceEntityMapper {
     fun toPlaceEntity(place: Place): PlaceEntity {
         return PlaceEntity(
             place.id,
+            System.currentTimeMillis(),
             place
         )
     }
