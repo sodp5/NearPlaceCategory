@@ -173,7 +173,7 @@ fun Category(
 
 @Composable
 fun ArticleItem(place: Place, onClickAction: () -> Unit) {
-    val placeImage = rememberImagePainter(place.articleImage?.url) {
+    val placeImage = rememberImagePainter(place.placeUrl) {
         placeholder(R.drawable.ic_restaurant_placeholder)
         error(R.drawable.ic_restaurant_placeholder)
     }

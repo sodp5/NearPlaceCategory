@@ -1,19 +1,17 @@
 package com.munny.nearplacecategory.ui.article
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
-import com.munny.nearplacecategory.extensions.map
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.extensions.toDistance
-import com.munny.nearplacecategory.model.Place
-import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.ArticleInfo
+import com.munny.nearplacecategory.model.Place
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
@@ -23,14 +21,9 @@ class ArticleViewModel @AssistedInject constructor(
     val articleInfoState: State<ArticleInfo>
         get() = _articleInfoState
 
-    private val _articleImage = mutableStateOf(ArticleImage.Empty)
-    val articleImage: State<ArticleImage>
-        get() = _articleImage
-
     private val _staticMapImage = mutableStateOf<Bitmap>(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
     val staticMapImage: State<Bitmap>
         get() = _staticMapImage
-
 
     init {
         getStaticMap()
@@ -41,12 +34,11 @@ class ArticleViewModel @AssistedInject constructor(
         place.let {
             _articleInfoState.value = ArticleInfo(
                 name = it.name,
+                placeUrl = it.placeUrl ?: "",
                 categories = it.categories.joinToString(", "),
                 phoneNumber = it.phone,
                 distance = it.distance.toDistance()
             )
-
-            _articleImage.value = it.articleImage ?: return@let
         }
     }
 

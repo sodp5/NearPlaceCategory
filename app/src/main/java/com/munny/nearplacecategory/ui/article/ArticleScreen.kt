@@ -16,18 +16,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.munny.nearplacecategory.R
-import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.ArticleInfo
 import com.munny.nearplacecategory.values.Colors
 
 @Composable
 fun ArticleScreen(
-    articleImage: ArticleImage,
     articleInfoState: ArticleInfo,
     placeMap: Bitmap?
 ) {
     Column {
-        PlaceImage(articleImage)
+        PlaceImage(articleInfoState.placeUrl)
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -43,13 +41,13 @@ fun ArticleScreen(
 }
 
 @Composable
-fun PlaceImage(articleImage: ArticleImage) {
-    val placeImage = rememberImagePainter(articleImage.url) {
+fun PlaceImage(placeUrl: String) {
+    val placeImage = rememberImagePainter(placeUrl) {
         placeholder(R.drawable.ic_restaurant_placeholder)
         error(R.drawable.ic_restaurant_placeholder)
     }
 
-    articleImage.url.isEmpty().let {
+    placeUrl.isEmpty().let {
         if (it) {
             return@let
         }
@@ -137,7 +135,6 @@ fun PlaceMap(map: Bitmap?) {
 @Composable
 fun ArticlePreview() {
     ArticleScreen(
-        ArticleImage.Empty,
         ArticleInfo("청년다방", "한식", "010-1234-5670", "112km"),
         null
     )

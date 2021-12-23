@@ -9,6 +9,9 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -38,6 +42,7 @@ fun RandomPlaceScreen(
     recentlyPlace: Place?,
     isLoading: Boolean,
     onPlaceClickEvent: (Place) -> Unit,
+    onLikeClickEvent: (Place) -> Unit,
     selectRandomPlaceEvent: () -> Unit,
     onRefreshEvent: () -> Unit
 ) {
@@ -60,6 +65,7 @@ fun RandomPlaceScreen(
             recentlyPlace = recentlyPlace,
             isLoading = isLoading,
             onPlaceClickEvent = onPlaceClickEvent,
+            onLikeClickEvent = onLikeClickEvent,
             onRefreshEvent = onRefreshEvent,
             modifier = Modifier.padding(innerPadding)
         )
@@ -72,6 +78,7 @@ fun RandomPlaceContent(
     recentlyPlace: Place?,
     isLoading: Boolean,
     onPlaceClickEvent: (Place) -> Unit,
+    onLikeClickEvent: (Place) -> Unit,
     onRefreshEvent: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -113,7 +120,12 @@ fun RandomPlaceContent(
                 items = histories,
                 key = { it.id }
             ) { place ->
-                RandomArticleHistory(place = place) {
+                HorizontalArticleItem(
+                    place = place,
+                    onLikeClickEvent = {
+                        onLikeClickEvent.invoke(place)
+                    }
+                ) {
                     onPlaceClickEvent.invoke(place)
                 }
                 Divider()
@@ -133,22 +145,25 @@ fun RandomArticleHeader() {
 }
 
 @Composable
-fun RandomArticleHistory(
+fun HorizontalArticleItem(
     place: Place,
     modifier: Modifier = Modifier,
+    onLikeClickEvent: () -> Unit,
     onClickEvent: () -> Unit,
 ) {
-    val painter = rememberImagePainter(data = place.articleImage?.url) {
+    val painter = rememberImagePainter(data = place.placeUrl) {
         error(R.drawable.ic_restaurant_placeholder)
         placeholder(R.drawable.ic_restaurant_placeholder)
     }
 
-    Row(
+    ConstraintLayout(
         modifier = modifier
             .clickable(onClick = onClickEvent)
             .padding(vertical = 16.dp)
             .fillMaxWidth()
     ) {
+        val (image, contents, like) = createRefs()
+
         Image(
             painter = painter,
             contentScale = ContentScale.Crop,
@@ -156,10 +171,22 @@ fun RandomArticleHistory(
             modifier = Modifier
                 .height(80.dp)
                 .aspectRatio(1f, true)
+                .constrainAs(image) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                }
         )
-        Spacer(modifier = Modifier.size(16.dp))
         Column(
-            Modifier.padding(top = 4.dp)
+            modifier = Modifier
+                .padding(
+                    top = 2.dp,
+                    start = 12.dp
+                )
+                .constrainAs(contents) {
+                    top.linkTo(image.top)
+                    start.linkTo(image.end)
+                }
         ) {
             Text(
                 text = place.name,
@@ -179,6 +206,31 @@ fun RandomArticleHistory(
                 color = colorResource(R.color.text_gray)
             )
         }
+
+        val vector: Any
+        val tint: Color
+
+        if (place.isLiked) {
+            vector = Icons.Sharp.Favorite
+            tint = Color.Red
+        } else {
+            vector = Icons.Sharp.FavoriteBorder
+            tint = Color.DarkGray
+        }
+
+        Icon(
+            imageVector = vector,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable(onClick = onLikeClickEvent)
+                .constrainAs(like) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+        )
     }
 }
 
@@ -197,11 +249,12 @@ fun EmptyRandomHistory() {
 fun RandomPlaceScreenPreview() {
     RandomPlaceScreen(
         listOf(
-            Place(0, "hello", null, emptyList(), "", 10, 0.0, 0.0),
-            Place(1, "hello", null, emptyList(), "", 10, 0.0, 0.0)
+            Place(0, "hello", "", emptyList(), "", 10, 0.0, 0.0, false),
+            Place(1, "hello", "", emptyList(), "", 10, 0.0, 0.0, false)
         ),
-        Place(1, "hello", null, emptyList(), "", 10, 0.0, 0.0),
+        Place(1, "hello", "", emptyList(), "", 10, 0.0, 0.0, false),
         false,
+        { },
         { },
         { }
     ) {

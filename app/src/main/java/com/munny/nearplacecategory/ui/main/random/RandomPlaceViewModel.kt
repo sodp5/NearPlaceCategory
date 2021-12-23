@@ -8,18 +8,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.shared.articleimage.ArticleImageRepository
+import com.munny.nearplacecategory.ui.shared.favorite.FavoriteRepository
 import com.munny.nearplacecategory.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RandomPlaceViewModel @Inject constructor(
-    private val articleImageRepository: ArticleImageRepository
+    private val articleImageRepository: ArticleImageRepository,
+    private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
     private val _histories = mutableStateListOf<Place>()
     val histories: SnapshotStateList<Place>
@@ -56,12 +56,12 @@ class RandomPlaceViewModel @Inject constructor(
             _isLoading.value = true
 
             val randomPlace = allPlace.random()
-            val articleImage = articleImageRepository.getArticleImage(randomPlace.name)
+            val placeUrl = articleImageRepository.getArticleImageUrl(randomPlace.name)
 
             _recentlyPlace.value?.let {
                 _histories.add(0, it)
             }
-            _recentlyPlace.value = randomPlace.copy(articleImage = articleImage)
+            _recentlyPlace.value = randomPlace.copy(placeUrl = placeUrl)
 
             _isLoading.value = false
         }
@@ -74,5 +74,34 @@ class RandomPlaceViewModel @Inject constructor(
         _histories.clear()
 
         _isLoading.value = false
+    }
+
+    fun switchFavorite(place: Place) {
+        val liked = place.isLiked.not()
+
+        val index = _histories.indexOf(place)
+        val switchedPlace = _histories[index].copy(
+            isLiked = liked
+        )
+
+        _histories[index] = switchedPlace
+
+        if (liked) {
+            addFavorite(switchedPlace)
+        } else {
+            removeFavorite(switchedPlace)
+        }
+    }
+
+    private fun addFavorite(place: Place) {
+        viewModelScope.launch {
+            favoriteRepository.insertPlace(place)
+        }
+    }
+
+    private fun removeFavorite(place: Place) {
+        viewModelScope.launch {
+            favoriteRepository.deletePlace(place.id)
+        }
     }
 }

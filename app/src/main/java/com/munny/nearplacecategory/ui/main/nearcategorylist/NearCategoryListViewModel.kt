@@ -102,7 +102,7 @@ class NearCategoryListViewModel @Inject constructor(
 
             val newCategoryItem = categoryItem.copy(
                 placeList = categoryItem.placeList.map {
-                    it.copy(articleImage = articleImageRepository.getArticleImage(it.name))
+                    it.copy(placeUrl = articleImageRepository.getArticleImageUrl(it.name))
                 }
             )
 
