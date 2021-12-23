@@ -186,7 +186,10 @@ private fun getFavoriteNavItem(
     favoriteViewModel: FavoriteViewModel,
     placeClickEvent: (Place) -> Unit
 ) = NavItem(
-    navScreen = MainNavScreen.Favorite
+    navScreen = MainNavScreen.Favorite,
+    onTabSelected = {
+        favoriteViewModel.getAllPlace()
+    }
 ) {
     FavoriteScreen(
         places = favoriteViewModel.favoritePlaces,
