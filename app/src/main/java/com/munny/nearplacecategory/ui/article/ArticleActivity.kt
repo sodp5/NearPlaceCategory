@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.munny.nearplacecategory.model.ArticleImage
 import com.munny.nearplacecategory.model.ArticleInfo
 import com.munny.nearplacecategory.model.Place
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +33,12 @@ class ArticleActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        vm.checkFavorite()
+    }
+
     companion object {
         private const val EXTRA_PLACE = "extra_place"
 
@@ -47,15 +52,22 @@ class ArticleActivity : AppCompatActivity() {
 
 @Composable
 private fun Screen(articleViewModel: ArticleViewModel) {
-    val articleImage by articleViewModel.articleImage
     val articleInfo by articleViewModel.articleInfoState
     val placeMap by articleViewModel.staticMapImage
 
-    ArticleScreen(articleImage, articleInfo, placeMap)
+    ArticleScreen(
+        articleInfoState = articleInfo,
+        placeMap = placeMap,
+        onLikeClickEvent = articleViewModel::switchFavorite
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewScreen() {
-    ArticleScreen(ArticleImage.Empty, ArticleInfo(), null)
+    ArticleScreen(
+        articleInfoState = ArticleInfo(),
+        placeMap = null,
+        onLikeClickEvent = {}
+    )
 }

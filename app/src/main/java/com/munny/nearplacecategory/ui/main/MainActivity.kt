@@ -18,6 +18,8 @@ import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.article.ArticleActivity
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
+import com.munny.nearplacecategory.ui.main.favorite.FavoriteScreen
+import com.munny.nearplacecategory.ui.main.favorite.FavoriteViewModel
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListScreen
@@ -30,6 +32,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private val nearCategoryListViewModel: NearCategoryListViewModel by viewModels()
     private val randomPlaceViewModel: RandomPlaceViewModel by viewModels()
+    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     private val locationProvider by lazy {
         LocationServices.getFusedLocationProviderClient(this)
@@ -48,7 +51,8 @@ class MainActivity : AppCompatActivity() {
                     val intent = ArticleActivity.getIntent(this, it)
 
                     startActivity(intent)
-                }
+                },
+                favoriteViewModel = favoriteViewModel
             )
         }
 
@@ -113,7 +117,8 @@ private fun Screen(
     nearCategoryListViewModel: NearCategoryListViewModel,
     nearCategoryClickEvent: (CategoryItem) -> Unit,
     randomPlaceViewModel: RandomPlaceViewModel,
-    placeClickEvent: (Place) -> Unit
+    placeClickEvent: (Place) -> Unit,
+    favoriteViewModel: FavoriteViewModel
 ) {
     val nearNavItem = getNearCategoryListNavItem(
         nearCategoryListViewModel = nearCategoryListViewModel,
@@ -125,7 +130,10 @@ private fun Screen(
         placeClickEvent = placeClickEvent
     )
 
-    val favoriteNavItem = getFavoriteNavItem()
+    val favoriteNavItem = getFavoriteNavItem(
+        favoriteViewModel = favoriteViewModel,
+        placeClickEvent = placeClickEvent
+    )
 
     val infoNavItem = getInfoNavItem()
 
@@ -158,7 +166,8 @@ private fun getRandomPlaceNavItem(
     randomPlaceViewModel: RandomPlaceViewModel,
     placeClickEvent: (Place) -> Unit
 ) = NavItem(
-    navScreen = MainNavScreen.Random
+    navScreen = MainNavScreen.Random,
+    onTabSelected = randomPlaceViewModel::setupFavoritePlaceIds
 ) {
     val recentlyPlace by randomPlaceViewModel.recentlyPlace
     val isLoading by randomPlaceViewModel.isLoading
@@ -168,15 +177,24 @@ private fun getRandomPlaceNavItem(
         recentlyPlace = recentlyPlace,
         isLoading = isLoading,
         onPlaceClickEvent = placeClickEvent,
+        onLikeClickEvent = randomPlaceViewModel::switchFavorite,
         selectRandomPlaceEvent = randomPlaceViewModel::selectRandomPlace,
         onRefreshEvent = randomPlaceViewModel::onRefresh
     )
 }
 
-private fun getFavoriteNavItem() = NavItem(
-    navScreen = MainNavScreen.Favorite
+private fun getFavoriteNavItem(
+    favoriteViewModel: FavoriteViewModel,
+    placeClickEvent: (Place) -> Unit
+) = NavItem(
+    navScreen = MainNavScreen.Favorite,
+    onTabSelected = favoriteViewModel::getAllPlace
 ) {
-
+    FavoriteScreen(
+        places = favoriteViewModel.favoritePlaces,
+        onItemClickEvent = placeClickEvent,
+        onLikeClickEvent = favoriteViewModel::switchFavorite
+    )
 }
 
 private fun getInfoNavItem() = NavItem(

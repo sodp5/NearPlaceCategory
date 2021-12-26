@@ -10,12 +10,13 @@ class PlaceMapper {
         return Place(
             id = document.id,
             name = document.place_name,
-            articleImage = null,
+            placeUrl = "",
             categories = categories,
             phone = document.phone,
             distance = document.distance.ifEmpty { "0" }.toInt(),
             longitude = document.longitude,
-            latitude = document.latitude
+            latitude = document.latitude,
+            isLiked = false
         )
     }
 }

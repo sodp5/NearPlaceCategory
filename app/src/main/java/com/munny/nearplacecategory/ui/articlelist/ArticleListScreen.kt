@@ -1,20 +1,18 @@
 package com.munny.nearplacecategory.ui.articlelist
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,6 +31,7 @@ import coil.compose.rememberImagePainter
 import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.ui.shared.article.ArticleItem
 import com.munny.nearplacecategory.values.Colors
 
 @Composable
@@ -42,7 +41,8 @@ fun ArticleListScreen(
     backPressedEvent: () -> Unit,
     itemClickEvent: (Place) -> Unit,
     categories: List<String>,
-    categoryClickEvent: (String) -> Unit
+    categoryClickEvent: (String) -> Unit,
+    onLikeClickEvent: (Place) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -52,12 +52,13 @@ fun ArticleListScreen(
             )
         }
     ) { innerPadding ->
-        Contents(
+        ArticleListContents(
             modifier = Modifier.padding(innerPadding),
             placeList = placeList,
             itemClickEvent = itemClickEvent,
             categories = categories,
-            categoryClickEvent = categoryClickEvent
+            categoryClickEvent = categoryClickEvent,
+            onLikeClickEvent = onLikeClickEvent
         )
     }
 }
@@ -109,12 +110,13 @@ fun Shadow() {
 }
 
 @Composable
-fun Contents(
+fun ArticleListContents(
     modifier: Modifier = Modifier,
     placeList: List<Place>,
     itemClickEvent: (Place) -> Unit,
     categories: List<String>,
-    categoryClickEvent: (String) -> Unit
+    categoryClickEvent: (String) -> Unit,
+    onLikeClickEvent: (Place) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -129,9 +131,15 @@ fun Contents(
         }
         item { Spacer(modifier = Modifier.size(16.dp)) }
         items(placeList) { article ->
-            ArticleItem(article) {
-                itemClickEvent.invoke(article)
-            }
+            ArticleItem(
+                place = article,
+                onClickAction = {
+                    itemClickEvent.invoke(article)
+                },
+                onLikeClickEvent = {
+                    onLikeClickEvent.invoke(article)
+                }
+            )
             Spacer(modifier = Modifier.size(16.dp))
         }
     }
@@ -169,50 +177,4 @@ fun Category(
                 onClickAction.invoke()
             }
     )
-}
-
-@Composable
-fun ArticleItem(place: Place, onClickAction: () -> Unit) {
-    val placeImage = rememberImagePainter(place.articleImage?.url) {
-        placeholder(R.drawable.ic_restaurant_placeholder)
-        error(R.drawable.ic_restaurant_placeholder)
-    }
-
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        elevation = 0.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .clickable(
-                    onClick = onClickAction,
-                    indication = rememberRipple(bounded = true),
-                    interactionSource = MutableInteractionSource()
-                )
-        ) {
-            Image(
-                painter = placeImage,
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                modifier = Modifier
-                    .aspectRatio(3 / 2f)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                text = place.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(R.color.text_black)
-            )
-            Text(
-                text = place.distance.toDistance(),
-                fontSize = 12.sp,
-                color = colorResource(R.color.text_gray)
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-        }
-    }
 }

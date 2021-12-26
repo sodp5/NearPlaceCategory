@@ -37,7 +37,17 @@ fun MainScreen(
         },
         bottomBar = {
             MainBottomBar(items, currentScreen.label) { route ->
-                navController.navigate(route)
+                if (currentScreen.name == route) {
+                    return@MainBottomBar
+                }
+
+                navController.navigate(route) {
+                    popUpTo(MainNavScreen.Near.name) {
+                        if (route == MainNavScreen.Near.name) {
+                            inclusive = true
+                        }
+                    }
+                }
             }
         }
     ) { innerPadding ->
@@ -99,6 +109,7 @@ fun MainBottomBar(
                 selected =  it.navScreen.label == selectedLabel,
                 tabSelected = {
                     tabSelected.invoke(it.navScreen.name)
+                    it.onTabSelected.invoke()
                 }
             )
         }
