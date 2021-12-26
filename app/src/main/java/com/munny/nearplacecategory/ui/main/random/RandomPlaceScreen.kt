@@ -96,7 +96,7 @@ fun RandomPlaceContent(
                             onPlaceClickEvent.invoke(it)
                         },
                         onLikeClickEvent = {
-
+                            onLikeClickEvent.invoke(it)
                         },
                     )
                 }

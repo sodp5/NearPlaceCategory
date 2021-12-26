@@ -118,11 +118,18 @@ class RandomPlaceViewModel @Inject constructor(
     fun switchFavorite(place: Place) {
         viewModelScope.launch {
             val index = histories.indexOf(place)
-            val switchedPlace = switchFavoriteUseCase.switchFavorite(
-                histories[index]
-            )
 
-            histories[index] = switchedPlace
+            if (index < 0) {
+                recentlyPlace.value?.let {
+                    _recentlyPlace.value = switchFavoriteUseCase.switchFavorite(it)
+                }
+            } else {
+                val switchedPlace = switchFavoriteUseCase.switchFavorite(
+                    histories[index]
+                )
+
+                histories[index] = switchedPlace
+            }
         }
     }
 }
