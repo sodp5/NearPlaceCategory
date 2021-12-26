@@ -49,11 +49,19 @@ private fun Screen(articleViewModel: ArticleViewModel) {
     val articleInfo by articleViewModel.articleInfoState
     val placeMap by articleViewModel.staticMapImage
 
-    ArticleScreen(articleInfo, placeMap)
+    ArticleScreen(
+        articleInfoState = articleInfo,
+        placeMap = placeMap,
+        onLikeClickEvent = articleViewModel::switchFavorite
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewScreen() {
-    ArticleScreen(ArticleInfo(), null)
+    ArticleScreen(
+        articleInfoState = ArticleInfo(),
+        placeMap = null,
+        onLikeClickEvent = {}
+    )
 }

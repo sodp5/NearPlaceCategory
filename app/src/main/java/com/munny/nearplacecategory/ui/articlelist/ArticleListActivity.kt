@@ -65,9 +65,8 @@ private fun Screen(
         backPressedEvent = backPressedEvent,
         itemClickEvent = itemClickEvent,
         categories = articleListViewModel.categoryList,
-        categoryClickEvent = {
-            articleListViewModel.selectCategory(it)
-        }
+        categoryClickEvent = articleListViewModel::selectCategory,
+        onLikeClickEvent = articleListViewModel::switchFavorite
     )
 }
 
@@ -80,6 +79,7 @@ private fun PreviewScreen() {
         backPressedEvent = { },
         itemClickEvent = { },
         categories = emptyList(),
-        categoryClickEvent = { }
+        categoryClickEvent = { },
+        onLikeClickEvent = { }
     )
 }

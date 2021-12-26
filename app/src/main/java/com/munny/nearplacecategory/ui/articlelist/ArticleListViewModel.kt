@@ -10,13 +10,16 @@ import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.extensions.map
 import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.usecase.SwitchFavoriteUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ArticleListViewModel @AssistedInject constructor(
     @Assisted private val orgCategoryName: String,
-    @Assisted private val orgPlaceList: List<Place>
+    @Assisted private val orgPlaceList: List<Place>,
+    private val switchFavoriteUseCase: SwitchFavoriteUseCase
 ) : ViewModel() {
     private val _title = mutableStateOf(orgCategoryName)
     val title: State<String>
@@ -82,6 +85,15 @@ class ArticleListViewModel @AssistedInject constructor(
             addAll(newPlaceList)
         }
         _currCategory.value = currCategoryList.joinToString(">")
+    }
+
+    fun switchFavorite(place: Place) {
+        viewModelScope.launch {
+            val switched = switchFavoriteUseCase.switchFavorite(place)
+
+            val index = _placeList.indexOf(place)
+            _placeList[index] = switched
+        }
     }
 
     @dagger.assisted.AssistedFactory

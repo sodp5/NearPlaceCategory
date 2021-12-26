@@ -1,13 +1,20 @@
 package com.munny.nearplacecategory.ui.article
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -17,12 +24,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.munny.nearplacecategory.R
 import com.munny.nearplacecategory.model.ArticleInfo
+import com.munny.nearplacecategory.ui.shared.article.FavoriteIcon
 import com.munny.nearplacecategory.values.Colors
 
 @Composable
 fun ArticleScreen(
     articleInfoState: ArticleInfo,
-    placeMap: Bitmap?
+    placeMap: Bitmap?,
+    onLikeClickEvent: () -> Unit
 ) {
     Column {
         PlaceImage(articleInfoState.placeUrl)
@@ -31,10 +40,15 @@ fun ArticleScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.size(16.dp))
-            PlaceInfo(articleInfoState)
+
+            PlaceInfo(
+                state = articleInfoState,
+                onLikeClickEvent = onLikeClickEvent
+            )
             Spacer(modifier = Modifier.size(20.dp))
             Divider()
             Spacer(modifier = Modifier.size(16.dp))
+
             PlaceMap(placeMap)
         }
     }
@@ -73,13 +87,28 @@ fun PlaceImage(placeUrl: String) {
 }
 
 @Composable
-fun PlaceInfo(state: ArticleInfo) {
-    Text(
-        text = state.name,
-        color = Colors.TextBlack,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold
-    )
+fun PlaceInfo(
+    state: ArticleInfo,
+    onLikeClickEvent: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = state.name,
+            color = Colors.TextBlack,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        FavoriteIcon(
+            isLiked = state.isLiked,
+            onLikeClickEvent = onLikeClickEvent,
+            modifier = Modifier
+                .size(24.dp)
+        )
+    }
     Text(
         text = state.categories,
         color = Colors.TextGray,
@@ -135,7 +164,8 @@ fun PlaceMap(map: Bitmap?) {
 @Composable
 fun ArticlePreview() {
     ArticleScreen(
-        ArticleInfo("청년다방", "한식", "010-1234-5670", "112km"),
-        null
+        articleInfoState = ArticleInfo("청년다방", "한식", "010-1234-5670", "112km"),
+        placeMap = null,
+        onLikeClickEvent = { }
     )
 }

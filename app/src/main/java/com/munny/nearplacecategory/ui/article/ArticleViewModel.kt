@@ -9,12 +9,15 @@ import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.ArticleInfo
 import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.ui.shared.favorite.FavoriteRepository
+import com.munny.nearplacecategory.usecase.SwitchFavoriteUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 
 class ArticleViewModel @AssistedInject constructor(
     private val articleRepository: ArticleRepository,
+    private val switchFavoriteUseCase: SwitchFavoriteUseCase,
     @Assisted private val place: Place
 ) : ViewModel() {
     private val _articleInfoState = mutableStateOf(ArticleInfo())
@@ -25,6 +28,8 @@ class ArticleViewModel @AssistedInject constructor(
     val staticMapImage: State<Bitmap>
         get() = _staticMapImage
 
+    private var currentPlace = place
+
     init {
         getStaticMap()
         initialize()
@@ -32,15 +37,18 @@ class ArticleViewModel @AssistedInject constructor(
 
     private fun initialize() {
         place.let {
-            _articleInfoState.value = ArticleInfo(
-                name = it.name,
-                placeUrl = it.placeUrl ?: "",
-                categories = it.categories.joinToString(", "),
-                phoneNumber = it.phone,
-                distance = it.distance.toDistance()
-            )
+            _articleInfoState.value = toArticleInfo(it)
         }
     }
+
+    private fun toArticleInfo(place: Place) = ArticleInfo(
+        name = place.name,
+        placeUrl = place.placeUrl ?: "",
+        categories = place.categories.joinToString(", "),
+        phoneNumber = place.phone,
+        distance = place.distance.toDistance(),
+        isLiked = false
+    )
 
     private fun getStaticMap() {
         viewModelScope.launch {
@@ -54,6 +62,13 @@ class ArticleViewModel @AssistedInject constructor(
 
                 _staticMapImage.value = result
             }
+        }
+    }
+
+    fun switchFavorite() {
+        viewModelScope.launch {
+            currentPlace = switchFavoriteUseCase.switchFavorite(currentPlace)
+            _articleInfoState.value = toArticleInfo(currentPlace)
         }
     }
 

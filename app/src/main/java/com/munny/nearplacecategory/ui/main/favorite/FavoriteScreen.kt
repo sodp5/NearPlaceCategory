@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.munny.nearplacecategory.model.Place
-import com.munny.nearplacecategory.ui.main.random.HorizontalArticleItem
+import com.munny.nearplacecategory.ui.shared.article.HorizontalArticleItem
 
 @Composable
 fun FavoriteScreen(
