@@ -37,6 +37,10 @@ fun MainScreen(
         },
         bottomBar = {
             MainBottomBar(items, currentScreen.label) { route ->
+                if (currentScreen.name == route) {
+                    return@MainBottomBar
+                }
+
                 navController.navigate(route) {
                     popUpTo(MainNavScreen.Near.name) {
                         if (route == MainNavScreen.Near.name) {
