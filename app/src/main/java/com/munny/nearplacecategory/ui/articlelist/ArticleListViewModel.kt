@@ -10,6 +10,7 @@ import com.munny.nearplacecategory.extensions.ifFalse
 import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.extensions.map
 import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.usecase.GetAllPlaceIdUseCase
 import com.munny.nearplacecategory.usecase.SwitchFavoriteUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class ArticleListViewModel @AssistedInject constructor(
     @Assisted private val orgCategoryName: String,
     @Assisted private val orgPlaceList: List<Place>,
-    private val switchFavoriteUseCase: SwitchFavoriteUseCase
+    private val switchFavoriteUseCase: SwitchFavoriteUseCase,
+    private val getAllPlaceIdUseCase: GetAllPlaceIdUseCase
 ) : ViewModel() {
     private val _title = mutableStateOf(orgCategoryName)
     val title: State<String>
@@ -29,27 +31,41 @@ class ArticleListViewModel @AssistedInject constructor(
     val currCategory: State<String>
         get() = _currCategory
 
-    private val _placeList = mutableStateListOf<Place>().apply {
+    val placeList = SnapshotStateList<Place>().apply {
         addAll(orgPlaceList)
     }
-    val placeList: SnapshotStateList<Place>
-        get() = _placeList
 
     val categoryList: SnapshotStateList<String>
         get() = placeList.associateBy { place ->
-                place.categories.getOrElse(depth) { "" }
-            }.keys
-                .filter { key -> key.isNotEmpty() }
-                .toMutableStateList()
+            place.categories.getOrElse(depth) { "" }
+        }.keys
+            .filter { key -> key.isNotEmpty() }
+            .toMutableStateList()
 
     private val currCategoryList = arrayListOf(orgCategoryName)
 
     private var depth = 1
 
-    @Inject
-    fun sortList() {
-        _placeList.sortedBy {
+    init {
+        sortList()
+    }
+
+    private fun sortList() {
+        placeList.sortedBy {
             it.distance
+        }
+    }
+
+    fun checkFavorite() {
+        viewModelScope.launch {
+            val ids = getAllPlaceIdUseCase.getAllPlaceId()
+
+            placeList.map {
+                it.copy(isLiked = ids.contains(it.id))
+            }.run {
+                placeList.clear()
+                placeList.addAll(this)
+            }
         }
     }
 
@@ -80,7 +96,7 @@ class ArticleListViewModel @AssistedInject constructor(
             }
         }
 
-        _placeList.run {
+        placeList.run {
             clear()
             addAll(newPlaceList)
         }
@@ -91,8 +107,8 @@ class ArticleListViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val switched = switchFavoriteUseCase.switchFavorite(place)
 
-            val index = _placeList.indexOf(place)
-            _placeList[index] = switched
+            val index = placeList.indexOf(place)
+            placeList[index] = switched
         }
     }
 

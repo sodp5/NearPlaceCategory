@@ -11,6 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.shared.articleimage.ArticleImageRepository
 import com.munny.nearplacecategory.ui.shared.favorite.FavoriteRepository
+import com.munny.nearplacecategory.usecase.GetAllPlaceIdUseCase
+import com.munny.nearplacecategory.usecase.SwitchFavoriteUseCase
 import com.munny.nearplacecategory.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,11 +21,10 @@ import javax.inject.Inject
 @HiltViewModel
 class RandomPlaceViewModel @Inject constructor(
     private val articleImageRepository: ArticleImageRepository,
-    private val favoriteRepository: FavoriteRepository
+    private val switchFavoriteUseCase: SwitchFavoriteUseCase,
+    private val getAllPlaceIdUseCase: GetAllPlaceIdUseCase
 ) : ViewModel() {
-    private val _histories = mutableStateListOf<Place>()
-    val histories: SnapshotStateList<Place>
-        get() = _histories
+    val histories = SnapshotStateList<Place>()
 
     private val _recentlyPlace = mutableStateOf<Place?>(null)
     val recentlyPlace: State<Place?>
@@ -38,6 +39,7 @@ class RandomPlaceViewModel @Inject constructor(
         get() = _toastMessage
 
     private val allPlace = ArrayList<Place>()
+    private val favoritePlaceIds = ArrayList<Long>()
 
     fun setAllPlace(places: List<Place>) {
         allPlace.run {
@@ -45,6 +47,40 @@ class RandomPlaceViewModel @Inject constructor(
             addAll(places)
         }
     }
+
+    fun setupFavoritePlaceIds() {
+        viewModelScope.launch {
+            val ids = getAllPlaceIdUseCase.getAllPlaceId()
+
+            favoritePlaceIds.run {
+                clear()
+                addAll(ids)
+            }
+
+            setRecentlyFavorite()
+            setHistoriesFavorite()
+        }
+    }
+
+    private fun setRecentlyFavorite() {
+        val id = recentlyPlace.value?.id ?: return
+
+        _recentlyPlace.value = recentlyPlace.value?.copy(
+            isLiked = favoritePlaceIds.contains(id)
+        )
+    }
+
+    private fun setHistoriesFavorite() {
+        histories.map {
+            it.copy(
+                isLiked = favoritePlaceIds.contains(it.id)
+            )
+        }.run {
+            histories.clear()
+            histories.addAll(this)
+        }
+    }
+
 
     fun selectRandomPlace() {
         if (allPlace.isEmpty()) {
@@ -59,9 +95,12 @@ class RandomPlaceViewModel @Inject constructor(
             val placeUrl = articleImageRepository.getArticleImageUrl(randomPlace.name)
 
             _recentlyPlace.value?.let {
-                _histories.add(0, it)
+                histories.add(0, it)
             }
-            _recentlyPlace.value = randomPlace.copy(placeUrl = placeUrl)
+            _recentlyPlace.value = randomPlace.copy(
+                placeUrl = placeUrl,
+                isLiked = favoritePlaceIds.contains(randomPlace.id)
+            )
 
             _isLoading.value = false
         }
@@ -71,37 +110,19 @@ class RandomPlaceViewModel @Inject constructor(
         _isLoading.value = true
 
         _recentlyPlace.value = null
-        _histories.clear()
+        histories.clear()
 
         _isLoading.value = false
     }
 
     fun switchFavorite(place: Place) {
-        val liked = place.isLiked.not()
-
-        val index = _histories.indexOf(place)
-        val switchedPlace = _histories[index].copy(
-            isLiked = liked
-        )
-
-        _histories[index] = switchedPlace
-
-        if (liked) {
-            addFavorite(switchedPlace)
-        } else {
-            removeFavorite(switchedPlace)
-        }
-    }
-
-    private fun addFavorite(place: Place) {
         viewModelScope.launch {
-            favoriteRepository.insertPlace(place)
-        }
-    }
+            val index = histories.indexOf(place)
+            val switchedPlace = switchFavoriteUseCase.switchFavorite(
+                histories[index]
+            )
 
-    private fun removeFavorite(place: Place) {
-        viewModelScope.launch {
-            favoriteRepository.deletePlace(place.id)
+            histories[index] = switchedPlace
         }
     }
 }

@@ -166,7 +166,8 @@ private fun getRandomPlaceNavItem(
     randomPlaceViewModel: RandomPlaceViewModel,
     placeClickEvent: (Place) -> Unit
 ) = NavItem(
-    navScreen = MainNavScreen.Random
+    navScreen = MainNavScreen.Random,
+    onTabSelected = randomPlaceViewModel::setupFavoritePlaceIds
 ) {
     val recentlyPlace by randomPlaceViewModel.recentlyPlace
     val isLoading by randomPlaceViewModel.isLoading
@@ -187,9 +188,7 @@ private fun getFavoriteNavItem(
     placeClickEvent: (Place) -> Unit
 ) = NavItem(
     navScreen = MainNavScreen.Favorite,
-    onTabSelected = {
-        favoriteViewModel.getAllPlace()
-    }
+    onTabSelected = favoriteViewModel::getAllPlace
 ) {
     FavoriteScreen(
         places = favoriteViewModel.favoritePlaces,

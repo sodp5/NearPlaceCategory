@@ -17,4 +17,10 @@ class FavoriteRepositoryImpl @Inject constructor(
     override suspend fun getAllPlace(): List<Place> {
         return favoriteDataSource.getAllPlace()
     }
+
+    override suspend fun getAllPlaceId(): List<Long> {
+        return favoriteDataSource.getAllPlace().map {
+            it.id
+        }
+    }
 }

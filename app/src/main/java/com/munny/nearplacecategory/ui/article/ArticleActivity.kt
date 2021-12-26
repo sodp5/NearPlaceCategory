@@ -33,6 +33,12 @@ class ArticleActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        vm.checkFavorite()
+    }
+
     companion object {
         private const val EXTRA_PLACE = "extra_place"
 

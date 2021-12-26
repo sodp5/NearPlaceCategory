@@ -8,4 +8,6 @@ interface FavoriteRepository {
     suspend fun deletePlace(id: Long)
 
     suspend fun getAllPlace(): List<Place>
+
+    suspend fun getAllPlaceId(): List<Long>
 }

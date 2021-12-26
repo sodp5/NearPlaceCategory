@@ -10,15 +10,17 @@ import com.munny.nearplacecategory.extensions.toDistance
 import com.munny.nearplacecategory.model.ArticleInfo
 import com.munny.nearplacecategory.model.Place
 import com.munny.nearplacecategory.ui.shared.favorite.FavoriteRepository
+import com.munny.nearplacecategory.usecase.GetAllPlaceIdUseCase
 import com.munny.nearplacecategory.usecase.SwitchFavoriteUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 
 class ArticleViewModel @AssistedInject constructor(
+    @Assisted private val place: Place,
     private val articleRepository: ArticleRepository,
     private val switchFavoriteUseCase: SwitchFavoriteUseCase,
-    @Assisted private val place: Place
+    private val getAllPlaceIdUseCase: GetAllPlaceIdUseCase
 ) : ViewModel() {
     private val _articleInfoState = mutableStateOf(ArticleInfo())
     val articleInfoState: State<ArticleInfo>
@@ -36,7 +38,7 @@ class ArticleViewModel @AssistedInject constructor(
     }
 
     private fun initialize() {
-        place.let {
+        currentPlace.let {
             _articleInfoState.value = toArticleInfo(it)
         }
     }
@@ -47,7 +49,7 @@ class ArticleViewModel @AssistedInject constructor(
         categories = place.categories.joinToString(", "),
         phoneNumber = place.phone,
         distance = place.distance.toDistance(),
-        isLiked = false
+        isLiked = place.isLiked
     )
 
     private fun getStaticMap() {
@@ -68,6 +70,23 @@ class ArticleViewModel @AssistedInject constructor(
     fun switchFavorite() {
         viewModelScope.launch {
             currentPlace = switchFavoriteUseCase.switchFavorite(currentPlace)
+            _articleInfoState.value = toArticleInfo(currentPlace)
+        }
+    }
+
+
+    fun checkFavorite() {
+        viewModelScope.launch {
+            val ids = getAllPlaceIdUseCase.getAllPlaceId()
+
+            currentPlace = currentPlace.run {
+                if (ids.contains(id)) {
+                    copy(isLiked = true)
+                } else {
+                    copy(isLiked = false)
+                }
+            }
+
             _articleInfoState.value = toArticleInfo(currentPlace)
         }
     }

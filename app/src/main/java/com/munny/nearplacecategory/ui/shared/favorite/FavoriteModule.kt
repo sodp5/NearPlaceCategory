@@ -6,8 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class FavoriteModule {
     @Binds
     abstract fun bindFavoriteRepository(

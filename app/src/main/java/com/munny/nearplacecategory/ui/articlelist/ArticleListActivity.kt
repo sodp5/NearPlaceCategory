@@ -40,6 +40,12 @@ class ArticleListActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        vm.checkFavorite()
+    }
+
     override fun onBackPressed() {
         vm.removeLastCategory().ifFalse {
             super.onBackPressed()
