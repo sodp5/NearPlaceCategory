@@ -23,7 +23,7 @@ enum class MainNavScreen(
         icon = Icons.Filled.Favorite,
         label = "찜목록"
     ),
-    Info(
+    MyInfo(
         icon = Icons.Filled.Person,
         label = "내정보"
     );
@@ -34,7 +34,7 @@ enum class MainNavScreen(
                 Near.name -> Near
                 Random.name -> Random
                 Favorite.name -> Favorite
-                Info.name -> Info
+                MyInfo.name -> MyInfo
                 null -> Near
 
                 else -> throw Exception("not exist screen")

@@ -2,11 +2,15 @@ package com.munny.nearplacecategory.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Moving
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +24,9 @@ import com.munny.nearplacecategory.ui.article.ArticleActivity
 import com.munny.nearplacecategory.ui.articlelist.ArticleListActivity
 import com.munny.nearplacecategory.ui.main.favorite.FavoriteScreen
 import com.munny.nearplacecategory.ui.main.favorite.FavoriteViewModel
+import com.munny.nearplacecategory.ui.main.myinfo.MenuItem
+import com.munny.nearplacecategory.ui.main.myinfo.MyInfoScreen
+import com.munny.nearplacecategory.ui.main.myinfo.MyInfoViewModel
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListScreen
@@ -33,11 +40,30 @@ class MainActivity : AppCompatActivity() {
     private val nearCategoryListViewModel: NearCategoryListViewModel by viewModels()
     private val randomPlaceViewModel: RandomPlaceViewModel by viewModels()
     private val favoriteViewModel: FavoriteViewModel by viewModels()
+    private val myInfoViewModel: MyInfoViewModel by viewModels()
 
     private val locationProvider by lazy {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
+    private val menuItems: List<MenuItem> by lazy {
+        listOf(
+            MenuItem(
+                itemName = "내 주변 거리 설정",
+                itemIcon = Icons.Default.Moving,
+                onItemClick = { }
+            ),
+            MenuItem(
+                itemName = "앱 버전",
+                itemIcon = Icons.Default.Info,
+                onItemClick = {
+                    Toast.makeText(this, "1.0.0", Toast.LENGTH_SHORT).show()
+                }
+            )
+        )
+    }
+
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -52,7 +78,17 @@ class MainActivity : AppCompatActivity() {
 
                     startActivity(intent)
                 },
-                favoriteViewModel = favoriteViewModel
+                favoriteViewModel = favoriteViewModel,
+                myInfoViewModel = myInfoViewModel,
+                menuItems = menuItems,
+                refreshMyLocation = {
+                    locationProvider.lastLocation.addOnSuccessListener {
+                        myInfoViewModel.getMyLocation(
+                            longitude = it.longitude,
+                            latitude = it.latitude
+                        )
+                    }
+                }
             )
         }
 
@@ -94,10 +130,18 @@ class MainActivity : AppCompatActivity() {
             if (tedPermission.isGranted) {
                 val locationRequest = LocationRequest.create()
                 val locationCallBack = object : LocationCallback() {
+                    private var isFirstFind = true
+
                     override fun onLocationResult(result: LocationResult) {
+                        if (!isFirstFind) {
+                            return
+                        }
+                        isFirstFind = false
+
                         val location = result.lastLocation
 
                         nearCategoryListViewModel.setLatLng(location.latitude, location.longitude)
+                        myInfoViewModel.getMyLocation(location.longitude, location.latitude)
                     }
 
                     override fun onLocationAvailability(availability: LocationAvailability) = Unit
@@ -118,7 +162,10 @@ private fun Screen(
     nearCategoryClickEvent: (CategoryItem) -> Unit,
     randomPlaceViewModel: RandomPlaceViewModel,
     placeClickEvent: (Place) -> Unit,
-    favoriteViewModel: FavoriteViewModel
+    favoriteViewModel: FavoriteViewModel,
+    myInfoViewModel: MyInfoViewModel,
+    menuItems: List<MenuItem>,
+    refreshMyLocation: () -> Unit
 ) {
     val nearNavItem = getNearCategoryListNavItem(
         nearCategoryListViewModel = nearCategoryListViewModel,
@@ -135,7 +182,11 @@ private fun Screen(
         placeClickEvent = placeClickEvent
     )
 
-    val infoNavItem = getInfoNavItem()
+    val infoNavItem = getMyInfoNavItem(
+        myInfoViewModel = myInfoViewModel,
+        menuItems = menuItems,
+        refreshMyLocation = refreshMyLocation
+    )
 
     val screenList = listOf(
         nearNavItem,
@@ -197,10 +248,28 @@ private fun getFavoriteNavItem(
     )
 }
 
-private fun getInfoNavItem() = NavItem(
-    navScreen = MainNavScreen.Info
+private fun getMyInfoNavItem(
+    myInfoViewModel: MyInfoViewModel,
+    menuItems: List<MenuItem>,
+    refreshMyLocation: () -> Unit
+) = NavItem(
+    onTabSelected = {
+        myInfoViewModel.setRefreshEnabled(true)
+    },
+    navScreen = MainNavScreen.MyInfo
 ) {
+    val location by myInfoViewModel.myLocation
+    val refreshEnabled by myInfoViewModel.refreshEnabled
 
+    MyInfoScreen(
+        location = location,
+        menuItems = menuItems,
+        locationRefreshEnabled = refreshEnabled,
+        locationRefreshEvent = {
+            refreshMyLocation.invoke()
+            myInfoViewModel.setRefreshEnabled(false)
+        }
+    )
 }
 
 @Preview(showBackground = true)
