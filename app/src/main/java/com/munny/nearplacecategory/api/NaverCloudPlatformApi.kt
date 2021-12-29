@@ -1,6 +1,7 @@
 package com.munny.nearplacecategory.api
 
 import com.munny.nearplacecategory._base.ApiAuth
+import com.munny.nearplacecategory.api.response.ReverseGeocodingResponse
 import com.munny.nearplacecategory.api.response.StaticMapVersionResponse
 import okhttp3.ResponseBody
 import retrofit2.http.GET
@@ -13,7 +14,7 @@ interface NaverCloudPlatformApi {
     suspend fun getReverseGeocoding(
         @Query("coords") coords: String,
         @Query("output") output: String = "json"
-    ): Any
+    ): ReverseGeocodingResponse
 
     @GET("map-geocode/v2/geocode")
     suspend fun getGeocoding(

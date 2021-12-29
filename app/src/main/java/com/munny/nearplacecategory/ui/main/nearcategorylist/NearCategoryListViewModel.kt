@@ -42,13 +42,9 @@ class NearCategoryListViewModel @Inject constructor(
     private var currentLatLng: LatLng? = null
 
     fun setLatLng(latitude: Double, longitude: Double) {
-        val isInit = currentLatLng == null
-
         currentLatLng = LatLng(latitude, longitude)
 
-        if (isInit) {
-            searchPoi()
-        }
+        searchPoi()
     }
 
     private fun searchPoi() {

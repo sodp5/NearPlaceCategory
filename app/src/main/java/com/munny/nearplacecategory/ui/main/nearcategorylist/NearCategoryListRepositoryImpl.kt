@@ -1,10 +1,12 @@
 package com.munny.nearplacecategory.ui.main.nearcategorylist
 
 import com.munny.nearplacecategory.model.Place
+import com.munny.nearplacecategory.ui.shared.setting.SettingDataSource
 import javax.inject.Inject
 
 class NearCategoryListRepositoryImpl @Inject constructor(
-    private val nearCategoryListDataSource: NearCategoryListDataSource
+    private val nearCategoryListDataSource: NearCategoryListDataSource,
+    private val settingDataSource: SettingDataSource
 ) : NearCategoryListRepository {
 
     override suspend fun getPlaceByCategory(
@@ -24,7 +26,7 @@ class NearCategoryListRepositoryImpl @Inject constructor(
                 latitude,
                 longitude,
                 page++,
-                500,
+                settingDataSource.getNearDistance(),
                 size
             )
 
