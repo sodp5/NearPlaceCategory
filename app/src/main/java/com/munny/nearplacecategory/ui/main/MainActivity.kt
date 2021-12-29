@@ -2,6 +2,7 @@ package com.munny.nearplacecategory.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
@@ -31,6 +32,7 @@ import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
 import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListScreen
 import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListViewModel
+import com.munny.nearplacecategory.ui.setting.SettingActivity
 import com.munny.nearplacecategory.utils.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -49,9 +51,12 @@ class MainActivity : AppCompatActivity() {
     private val menuItems: List<MenuItem> by lazy {
         listOf(
             MenuItem(
-                itemName = "내 주변 거리 설정",
+                itemName = "내 주변 반경 설정",
                 itemIcon = Icons.Default.Moving,
-                onItemClick = { }
+                onItemClick = {
+                    val intent = Intent(this, SettingActivity::class.java)
+                    startActivity(intent)
+                }
             ),
             MenuItem(
                 itemName = "앱 버전",
