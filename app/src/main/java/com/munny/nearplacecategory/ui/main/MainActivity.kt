@@ -3,10 +3,10 @@ package com.munny.nearplacecategory.ui.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.icons.Icons
@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.coroutineScope
 import com.google.android.gms.location.*
 import com.gun0912.tedpermission.coroutine.TedPermission
+import com.munny.nearplacecategory.extensions.ifTrue
 import com.munny.nearplacecategory.extensions.startActivity
 import com.munny.nearplacecategory.model.CategoryItem
 import com.munny.nearplacecategory.model.Place
@@ -28,10 +29,10 @@ import com.munny.nearplacecategory.ui.main.favorite.FavoriteViewModel
 import com.munny.nearplacecategory.ui.main.myinfo.MenuItem
 import com.munny.nearplacecategory.ui.main.myinfo.MyInfoScreen
 import com.munny.nearplacecategory.ui.main.myinfo.MyInfoViewModel
-import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
-import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListScreen
 import com.munny.nearplacecategory.ui.main.nearcategorylist.NearCategoryListViewModel
+import com.munny.nearplacecategory.ui.main.random.RandomPlaceScreen
+import com.munny.nearplacecategory.ui.main.random.RandomPlaceViewModel
 import com.munny.nearplacecategory.ui.setting.SettingActivity
 import com.munny.nearplacecategory.utils.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +49,19 @@ class MainActivity : AppCompatActivity() {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
+    private val activityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        (it.resultCode == RESULT_OK).ifTrue {
+            getLastLocation { latitude, longitude ->
+                nearCategoryListViewModel.setLatLng(
+                    latitude = latitude,
+                    longitude = longitude
+                )
+            }
+        }
+    }
+
     private val menuItems: List<MenuItem> by lazy {
         listOf(
             MenuItem(
@@ -55,7 +69,8 @@ class MainActivity : AppCompatActivity() {
                 itemIcon = Icons.Default.Moving,
                 onItemClick = {
                     val intent = Intent(this, SettingActivity::class.java)
-                    startActivity(intent)
+
+                    activityLauncher.launch(intent)
                 }
             ),
             MenuItem(
@@ -68,7 +83,8 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    @SuppressLint("MissingPermission")
+    private var isLocationFirstFind = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -87,10 +103,10 @@ class MainActivity : AppCompatActivity() {
                 myInfoViewModel = myInfoViewModel,
                 menuItems = menuItems,
                 refreshMyLocation = {
-                    locationProvider.lastLocation.addOnSuccessListener {
+                    getLastLocation { latitude, longitude ->
                         myInfoViewModel.getMyLocation(
-                            longitude = it.longitude,
-                            latitude = it.latitude
+                            longitude = longitude,
+                            latitude = latitude
                         )
                     }
                 }
@@ -135,13 +151,11 @@ class MainActivity : AppCompatActivity() {
             if (tedPermission.isGranted) {
                 val locationRequest = LocationRequest.create()
                 val locationCallBack = object : LocationCallback() {
-                    private var isFirstFind = true
-
                     override fun onLocationResult(result: LocationResult) {
-                        if (!isFirstFind) {
+                        if (!isLocationFirstFind) {
                             return
                         }
-                        isFirstFind = false
+                        isLocationFirstFind = false
 
                         val location = result.lastLocation
 
@@ -157,6 +171,15 @@ class MainActivity : AppCompatActivity() {
                     mainLooper
                 )
             }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation(
+        onSuccess: (latitude: Double, longitude: Double) -> Unit
+    ) {
+        locationProvider.lastLocation.addOnSuccessListener {
+            onSuccess.invoke(it.latitude, it.longitude)
         }
     }
 }

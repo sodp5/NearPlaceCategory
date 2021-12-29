@@ -25,6 +25,7 @@ class SettingActivity : AppCompatActivity() {
         vm.completeEvent.observeEvent(this) {
             if (it) {
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+                setResult(RESULT_OK)
                 finish()
             } else {
                 Toast.makeText(this, "거리를 100m 이상으로 설정해주세요.", Toast.LENGTH_SHORT).show()
